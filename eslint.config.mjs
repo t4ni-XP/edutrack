@@ -7,24 +7,35 @@ const compat = new FlatCompat({
 });
 
 export default [
-  // 無視リスト（フラット構成ではここに書く）
+  // 1) そもそも見ない場所（ビルド物・静的資産など）
   {
-    ignores: ["**/node_modules/**", ".next/**", "dist/**", "build/**", "coverage/**"],
+    ignores: [
+      "**/node_modules/**",
+      ".next/**",
+      ".turbo/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "public/**",
+      "**/*.d.ts",
+      "prisma/migrations/**",
+    ],
   },
 
-  // Next.js + TS + a11y + Prettier互換（format系はPrettierに委譲）
+  // 2) Next.js / TS / a11y / Prettier互換（レガシー拡張はcompatで読み込む）
   ...compat.config({
     extends: [
       "next",
       "next/core-web-vitals",
       "next/typescript",
       "plugin:jsx-a11y/recommended",
-      "prettier", // ← これが eslint-config-prettier（競合ルールを無効化）
+      "prettier", // ← eslint-config-prettier: フォーマット系はPrettierに委譲
     ],
   }),
 
-  // 追加ルールや上書き（最終ブロックでまとめて定義）
+  // 3) 対象ファイルを限定しつつ、追加ルールを一元管理
   {
+    files: ["**/*.{ts,tsx,js,jsx}"],
     plugins: {
       "jsx-a11y": jsxA11y,
     },
@@ -33,7 +44,7 @@ export default [
       sourceType: "module",
     },
     rules: {
-      // React 17+ / Next では不要
+      // React 17+ / Next は不要
       "react/react-in-jsx-scope": "off",
 
       // a11y は軽めに警告運用
@@ -44,16 +55,22 @@ export default [
       "jsx-a11y/role-has-required-aria-props": "warn",
       "jsx-a11y/role-supports-aria-props": "warn",
 
-      // 必要ならここに独自ルールを追加
-      // 例: import順を統一したいなら import/order を入れる等
+      // 日常運用で便利なやつ
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
 
-  // 型情報を厳密に使いたいとき（tscのproject参照）
-  // {
-  //   files: ["**/*.{ts,tsx}"],
-  //   languageOptions: {
-  //     parserOptions: { project: "./tsconfig.json" },
-  //   },
-  // },
+  // 4) テスト向け（必要なければ削ってOK）
+  {
+    files: ["**/*.{test,spec}.{ts,tsx,js,jsx}"],
+    languageOptions: {
+      globals: {
+        jest: "readonly",
+      },
+    },
+    rules: {
+      "no-console": "off",
+    },
+  },
 ];

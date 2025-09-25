@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "format": "prettier --write ."
+    "lint": "eslint \"{src,app,components,pages}/**/*.{ts,tsx,js,jsx}\"",
+    "lint:fix": "eslint \"{src,app,components,pages}/**/*.{ts,tsx,js,jsx}\" --fix",
+    "lint:changed": "eslint --cache --cache-location .eslintcache \"{src,app,components,pages}/**/*.{ts,tsx,js,jsx}\"",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "dependencies": {
     "next": "15.5.4",
