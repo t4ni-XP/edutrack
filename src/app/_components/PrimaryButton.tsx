@@ -4,12 +4,9 @@ import { darken } from "@mui/material/styles";
 import { Button, ButtonProps } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import NextLink from "next/link";
-import { ComponentProps } from "react";
-
-type NextHref = ComponentProps<typeof NextLink>["href"];
 
 type PrimaryButtonProps = Omit<ButtonProps, "variant" | "color" | "size" | "href"> & {
-  href: NextHref;             // Next.jsのhref型
+  href: string;            
   label: string;
   width?: number | string;
   height?: number | string;
