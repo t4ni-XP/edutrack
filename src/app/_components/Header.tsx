@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 
 interface HeaderProps {
@@ -6,9 +6,9 @@ interface HeaderProps {
 }
 
 export default function Header({ signInStatus }: HeaderProps) {
-  if (!signInStatus) {
-    signInStatus = false;
-  }
+  // if (!signInStatus) {
+  //   signInStatus = false;
+  // }
   return (
     <Box sx={{ width: "auto", height: "100px", bgcolor: "#3A606E" }}>
       <Stack

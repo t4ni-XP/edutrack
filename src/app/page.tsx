@@ -1,20 +1,17 @@
 import styles from "./page.module.css";
-import SignIn from "./(core)/_components/SignIn";
-import Dashboard from "./(core)/_components/Dashboard";
-import Header from "./(core)/_components/Header";
-import { Box } from "@mui/material";
+import SignIn from "./_components/SignIn";
+import Dashboard from "./_components/Dashboard";
+import Header from "./_components/Header";
 
 interface HomeProps {
   signInStatus?: boolean;
 }
 
-export default function Home({ signInStatus = false }: HomeProps) {
+export default function Home({ signInStatus = true }: HomeProps) {
   return (
     <main className={styles.main}>
       <Header signInStatus={signInStatus} />
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        {signInStatus ? <Dashboard /> : <SignIn />}
-      </Box>
+      {signInStatus ? <Dashboard /> : <SignIn />}
     </main>
   );
 }
