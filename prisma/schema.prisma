@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id         String   @id @default(cuid())
+  name       String
+  grade      Int
+  generation Int
+  report     String?
+  status     Status   @default(ACTIVE)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  enrollments Enrollment[] // ← 中間テーブル
+}
+
+model Tutor {
+  id        String    @id @default(cuid())
+  name      String
+  needsPickup  Boolean   @default(false) // ← grade/transfer だと意味が曖昧なのでリネーム推奨
+  subjects  Subject[] // ← 文字列配列より enum の方が堅い（必要に応じて）
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  teachings Teaching[] // ← 中間テーブル（複数講師に対応）
+  WorkLog   WorkLog[]
+}
+
+model Class {
+  id             String    @id @default(cuid())
+  name           String
+  classType      ClassType
+  weekday        Weekday
+  classRoom      String
+  studentUnitFee Int // 生徒向け単価（1回あたり）
+  startsAt       String? // "HH:mm" 等（週次クラスなら時刻だけ持つ）
+  endsAt         String?
+  capacity       Int? // 定員
+  status         Status    @default(ACTIVE)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  enrollments  Enrollment[]
+  teachings    Teaching[]
+  ClassSession ClassSession[]
+  WorkLog      WorkLog[]
+
+  // 二重予約防止（例：部屋＋曜日＋開始時刻の一意制約）
+  @@unique([weekday, classRoom, startsAt])
+}
+
+model ClassSession {
+  id      String        @id @default(cuid())
+  classId String
+  date    DateTime      @db.Date // 開催日
+  startAt DateTime? // 実際の開始（任意）
+  endAt   DateTime?
+  status  SessionStatus @default(HELD) // HELD=実施, CANCELED=休講, MAKEUP=振替 など
+  note    String?
+
+  class      Class        @relation(fields: [classId], references: [id])
+  Attendance Attendance[]
+  WorkLog    WorkLog[]
+
+  @@unique([classId, date]) // 同一クラスで同日重複を防ぐ
+  @@index([date])
+}
+
+model Enrollment {
+  // 生徒がクラスに所属する関係（多対多の“意味”を持たせる）
+  studentId String
+  classId   String
+  joinedAt  DateTime         @default(now())
+  leftAt    DateTime?
+  note      String?
+  status    EnrollmentStatus @default(ACTIVE)
+
+  student    Student      @relation(fields: [studentId], references: [id])
+  class      Class        @relation(fields: [classId], references: [id])
+  Attendance Attendance[]
+
+  @@id([studentId, classId]) // 組み合わせ一意
+  @@index([classId])
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  // enrollmentId を削除して、以下の2つを追加
+  studentId String
+  classId   String
+  sessionId String
+  status    AttendanceStatus @default(PRESENT)
+  note      String?
+
+  // 複合キーで Enrollment を参照する
+  enrollment Enrollment   @relation(fields: [studentId, classId], references: [studentId, classId])
+  session    ClassSession @relation(fields: [sessionId], references: [id])
+
+  // ユニーク制約も複合キーで指定する
+  @@unique([studentId, classId, sessionId])
+  @@index([sessionId])
+}
+
+model Teaching {
+  // 講師のアサイン（複数講師OK）
+  tutorId    String
+  classId    String
+  assignedAt DateTime @default(now())
+  wageUnit   WageUnit @default(PER_SESSION) // 将来の時給にも対応可
+  wageAmount Int
+
+  tutor Tutor @relation(fields: [tutorId], references: [id])
+  class Class @relation(fields: [classId], references: [id])
+
+  @@id([tutorId, classId])
+  @@index([classId])
+}
+
+model WorkLog {
+  id        String    @id @default(cuid())
+  tutorId   String
+  date      DateTime
+  startAt   DateTime?
+  endAt     DateTime?
+  minutes   Int?
+  role      StaffRole
+  classId   String?
+  sessionId String?
+
+  tutor   Tutor         @relation(fields: [tutorId], references: [id])
+  class   Class?        @relation(fields: [classId], references: [id])
+  session ClassSession? @relation(fields: [sessionId], references: [id])
+
+  @@index([tutorId, date])
+  @@index([classId, date])
+  @@index([sessionId])
+}
+
+enum SessionStatus {
+  HELD
+  CANCELED
+  MAKEUP
+}
+
+enum AttendanceStatus {
+  PRESENT // 出席
+  ABSENT // 欠席
+  EXCUSED // 公欠
+}
+
+enum WageUnit {
+  PER_SESSION
+  PER_HOUR
+}
+
+enum StaffRole {
+  TUTOR // 講師（クラス担当）
+  OPERATION // 運営/受付/監督など（クラス無しでもOK）
+}
+
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ClassType {
+  ENGLISH
+  INDIVIDUAL
+  INTERACTIVE
+  JAPANESE
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  LEFT
+}
+
+enum Subject {
+  ENGLISH
+  MATH
+  SCIENCE
+  JAPANESE
+  HISTORY
+}
