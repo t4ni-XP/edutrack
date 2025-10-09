@@ -1,6 +1,6 @@
 import SignIn from "./_components/SignIn";
 import Dashboard from "./_components/Dashboard";
-import Header from "./_components/Header";
+import Header from "./_components/ui/Header";
 
 interface HomeProps {
   signInStatus?: boolean;

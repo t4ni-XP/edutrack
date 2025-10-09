@@ -1,5 +1,5 @@
 import ClassTable from "../_components/ClassTable";
-import Header from "../_components/Header";
+import Header from "../_components/ui/Header";
 import { Box } from "@mui/material";
 
 type G = 1 | 2 | 3 | 4 | 5 | 6;
