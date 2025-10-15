@@ -1,0 +1,7 @@
+# .eslintignore
+node_modules/
+dist/
+build/
+coverage/
+prisma/generated/
+src/generated/prisma/

@@ -6,7 +6,7 @@ const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
 });
 
-export default [
+const config =  [
   // 1) そもそも見ない場所（ビルド物・静的資産など）
   {
     ignores: [
@@ -19,6 +19,8 @@ export default [
       "public/**",
       "**/*.d.ts",
       "prisma/migrations/**",
+      "src/generated/**",   
+      "mock/**",  
     ],
   },
 
@@ -74,3 +76,5 @@ export default [
     },
   },
 ];
+
+export default config;
