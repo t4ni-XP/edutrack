@@ -70,7 +70,14 @@ function parseStringArray(value: unknown): string[] | null {
     return list.length === value.length ? Array.from(new Set(list)) : null;
   }
   if (typeof value === "string") {
-    return Array.from(new Set(value.split(",").map((item) => item.trim()).filter(Boolean)));
+    return Array.from(
+      new Set(
+        value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+      ),
+    );
   }
   return null;
 }

@@ -92,7 +92,7 @@ export function serializeTutor(tutor: Tutor): TutorListRow {
     email: tutor.email,
     needsPickup: tutor.needsPickup,
     subjects: tutor.subjects,
-     role: tutor.role,
+    role: tutor.role,
     classCount: 0,
     sessionsWorked: 0,
     minutesWorked: 0,
