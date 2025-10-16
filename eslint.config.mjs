@@ -1,80 +1,53 @@
 // eslint.config.mjs
-import { FlatCompat } from "@eslint/eslintrc";
-import jsxA11y from "eslint-plugin-jsx-a11y";
+import js from "@eslint/js";
+import * as tseslint from "typescript-eslint";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-const config =  [
-  // 1) そもそも見ない場所（ビルド物・静的資産など）
+export default [
+  // 0) ignore（元 .eslintignore 相当）
   {
     ignores: [
-      "**/node_modules/**",
+      "node_modules/**",
       ".next/**",
-      ".turbo/**",
       "dist/**",
       "build/**",
       "coverage/**",
+      "prisma/generated/**",
+      "src/generated/prisma/**",
       "public/**",
-      "**/*.d.ts",
-      "prisma/migrations/**",
-      "src/generated/**",   
-      "mock/**",  
+      "**/*.d.ts"
     ],
   },
 
-  // 2) Next.js / TS / a11y / Prettier互換（レガシー拡張はcompatで読み込む）
-  ...compat.config({
-    extends: [
-      "next",
-      "next/core-web-vitals",
-      "next/typescript",
-      "plugin:jsx-a11y/recommended",
-      "prettier", // ← eslint-config-prettier: フォーマット系はPrettierに委譲
-    ],
-  }),
-
-  // 3) 対象ファイルを限定しつつ、追加ルールを一元管理
+  // 1) JS/JSX用（必要なら）
   {
-    files: ["**/*.{ts,tsx,js,jsx}"],
-    plugins: {
-      "jsx-a11y": jsxA11y,
-    },
-    languageOptions: {
-      ecmaVersion: 2024,
-      sourceType: "module",
-    },
-    rules: {
-      // React 17+ / Next は不要
-      "react/react-in-jsx-scope": "off",
-
-      // a11y は軽めに警告運用
-      "jsx-a11y/alt-text": "warn",
-      "jsx-a11y/aria-props": "warn",
-      "jsx-a11y/aria-proptypes": "warn",
-      "jsx-a11y/aria-unsupported-elements": "warn",
-      "jsx-a11y/role-has-required-aria-props": "warn",
-      "jsx-a11y/role-supports-aria-props": "warn",
-
-      // 日常運用で便利なやつ
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-    },
+    files: ["**/*.{js,jsx}"],
+    ...js.configs.recommended,
   },
 
-  // 4) テスト向け（必要なければ削ってOK）
+  // 2) TS/TSX用：配列を map で files を付与してからトップレベル展開
+  ...tseslint.configs.recommended.map((c) => ({
+    ...c,
+    files: ["**/*.{ts,tsx}"],
+  })),
+
+  // 3) 追加のReact/Hooksやプロジェクト固有ルール
   {
-    files: ["**/*.{test,spec}.{ts,tsx,js,jsx}"],
+    files: ["**/*.{ts,tsx}"],
+    plugins: { react, "react-hooks": reactHooks },
     languageOptions: {
-      globals: {
-        jest: "readonly",
-      },
+      // parser は recommended 側で設定済み。追加で JSX 有効化など
+      parserOptions: { ecmaFeatures: { jsx: true } },
     },
     rules: {
-      "no-console": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "error",
+      "react/jsx-uses-react": "off",     // React 17+
+      "react/react-in-jsx-scope": "off", // React 17+
+      ...reactHooks.configs.recommended.rules,
     },
+    settings: { react: { version: "detect" } },
   },
 ];
-
-export default config;
