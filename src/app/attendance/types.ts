@@ -2,27 +2,28 @@ import type { AttendanceStatus, StaffRole } from "@/generated/prisma";
 
 export type AttendanceStudentStatus = AttendanceStatus | "NONE";
 
-export type AttendanceStudent = {
-  id: string;
-  name: string;
+export type AttendanceStudentRow = {
+  classId: string;
+  className: string;
+  sessionId: string | null;
+  studentId: string;
+  studentName: string;
   grade: number;
   status: AttendanceStudentStatus;
 };
 
-export type AttendanceClassData = {
-  id: string;
-  name: string;
-  startsAt: string | null;
-  endsAt: string | null;
+export type AttendanceTutorRow = {
+  classId: string | null;
+  className: string | null;
   sessionId: string | null;
-  tutors: AttendanceTutorSummary[];
-  students: AttendanceStudent[];
+  tutorId: string;
+  tutorName: string;
+  role: StaffRole;
+  status: "PRESENT" | "ABSENT";
 };
 
-export type AttendanceTutorSummary = {
+export type AttendanceStaffTutor = {
   id: string;
   name: string;
   role: StaffRole;
 };
-
-export type AttendanceStaffTutor = AttendanceTutorSummary;

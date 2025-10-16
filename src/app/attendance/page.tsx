@@ -2,8 +2,8 @@ import Header from "../_components/ui/Header";
 import { Box, Typography } from "@mui/material";
 import prisma from "@/lib/prisma";
 import AttendancePageClient from "./AttendancePageClient";
-import type { AttendanceClassData, AttendanceStaffTutor } from "./types";
-import { EnrollmentStatus, StaffRole, Weekday } from "@/generated/prisma";
+import type { AttendanceStudentRow, AttendanceTutorRow } from "./types";
+import { AttendanceStatus, EnrollmentStatus, StaffRole, Weekday } from "@/generated/prisma";
 
 const weekdayOrder: Weekday[] = [
   Weekday.SUNDAY,
@@ -29,20 +29,27 @@ function getWeekdayEnum(date: Date): Weekday {
   return weekdayOrder[date.getDay()];
 }
 
-function toDateOnly(date: Date) {
-  return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+function startOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function endOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 }
 
 export default async function AttendancePage() {
   const today = new Date();
   const weekday = getWeekdayEnum(today);
-  const dateOnly = toDateOnly(today);
+  const dayLabel = weekdayLabel[weekday];
+  const dayStart = startOfDay(today);
+  const dayEnd = endOfDay(today);
 
   const classes = await prisma.class.findMany({
     where: { weekday },
     include: {
       teachings: {
         include: { tutor: true },
+        orderBy: { tutor: { name: "asc" } },
       },
       enrollments: {
         where: { status: EnrollmentStatus.ACTIVE },
@@ -54,12 +61,20 @@ export default async function AttendancePage() {
   });
 
   const classIds = classes.map((cls) => cls.id);
+  const tutorIdsForClasses = Array.from(
+    new Set(classes.flatMap((cls) => cls.teachings.map((teach) => teach.tutorId))),
+  );
+
+  const staffTutors = await prisma.tutor.findMany({
+    where: { role: StaffRole.STAFF },
+    orderBy: { name: "asc" },
+  });
 
   const sessions = classIds.length
     ? await prisma.classSession.findMany({
         where: {
           classId: { in: classIds },
-          date: dateOnly,
+          date: { gte: dayStart, lt: dayEnd },
         },
         include: { Attendance: true },
       })
@@ -67,58 +82,89 @@ export default async function AttendancePage() {
 
   const sessionByClass = new Map(sessions.map((session) => [session.classId, session]));
 
-  const classesData: AttendanceClassData[] = classes.map((cls) => {
-    const session = sessionByClass.get(cls.id) ?? null;
+  const tutorIdSet = new Set([
+    ...tutorIdsForClasses,
+    ...staffTutors.map((tutor) => tutor.id),
+  ]);
+
+  const workLogs = await prisma.workLog.findMany({
+    where: {
+      tutorId: { in: Array.from(tutorIdSet) },
+      date: { gte: dayStart, lt: dayEnd },
+    },
+    select: {
+      id: true,
+      tutorId: true,
+      classId: true,
+      sessionId: true,
+    },
+  });
+
+  const workLogMap = new Map<string, { id: string; sessionId: string | null }>();
+  workLogs.forEach((log) => {
+    const key = `${log.tutorId}::${log.classId ?? "__staff__"}`;
+    workLogMap.set(key, { id: log.id, sessionId: log.sessionId });
+  });
+
+  const studentRows: AttendanceStudentRow[] = classes.flatMap((cls) => {
+    const session = sessionByClass.get(cls.id);
     const attendanceByStudent = new Map(
       session?.Attendance.map((record) => [record.studentId, record.status]) ?? [],
     );
 
-    const students = cls.enrollments
-      .map((enrollment) => ({
-        id: enrollment.student.id,
-        name: enrollment.student.name,
-        grade: enrollment.student.grade,
-        status: (attendanceByStudent.get(enrollment.student.id) ?? "NONE") as
-          | AttendanceStatus
-          | "NONE",
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name, "ja"));
-
-    const tutors = cls.teachings.map((teaching) => ({
-      id: teaching.tutor.id,
-      name: teaching.tutor.name,
-      role: teaching.tutor.role,
-    }));
-
-    return {
-      id: cls.id,
-      name: cls.name,
-      startsAt: cls.startsAt ?? null,
-      endsAt: cls.endsAt ?? null,
+    return cls.enrollments.map((enrollment) => ({
+      classId: cls.id,
+      className: cls.name,
       sessionId: session?.id ?? null,
-      tutors,
-      students,
-    };
+      studentId: enrollment.student.id,
+      studentName: enrollment.student.name,
+      grade: enrollment.student.grade,
+      status: (attendanceByStudent.get(enrollment.student.id) ?? "NONE") as AttendanceStatus | "NONE",
+    }));
   });
 
-  const staffTutors: AttendanceStaffTutor[] = await prisma.tutor
-    .findMany({
-      where: { role: StaffRole.STAFF },
-      orderBy: { name: "asc" },
-    })
-    .then((result) => result.map((tutor) => ({ id: tutor.id, name: tutor.name, role: tutor.role })));
+  const tutorRows: AttendanceTutorRow[] = [
+    ...classes.flatMap((cls) =>
+      cls.teachings.map((teach) => {
+        const key = `${teach.tutorId}::${cls.id}`;
+        const log = workLogMap.get(key);
+        return {
+          classId: cls.id,
+          className: cls.name,
+          sessionId: log?.sessionId ?? sessionByClass.get(cls.id)?.id ?? null,
+          tutorId: teach.tutor.id,
+          tutorName: teach.tutor.name,
+          role: teach.tutor.role,
+          status: log ? "PRESENT" : "ABSENT",
+        } satisfies AttendanceTutorRow;
+      }),
+    ),
+    ...staffTutors.map((tutor) => {
+      const key = `${tutor.id}::__staff__`;
+      const log = workLogMap.get(key);
+      return {
+        classId: null,
+        className: null,
+        sessionId: log?.sessionId ?? null,
+        tutorId: tutor.id,
+        tutorName: tutor.name,
+        role: tutor.role,
+        status: log ? "PRESENT" : "ABSENT",
+      } satisfies AttendanceTutorRow;
+    }),
+  ];
 
   return (
     <>
       <Header signInStatus />
       <Box sx={{ width: "80%", mx: "auto", my: 4 }}>
         <Typography variant="h4" sx={{ mb: 3 }}>
-          出席管理（{weekdayLabel[weekday]}）
+          出席管理（{dayLabel}）
         </Typography>
         <AttendancePageClient
           dateIso={today.toISOString()}
-          classes={classesData}
-          staffTutors={staffTutors}
+          students={studentRows}
+          tutors={tutorRows}
         />
       </Box>
     </>

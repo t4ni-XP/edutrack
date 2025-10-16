@@ -138,7 +138,6 @@ model WorkLog {
   startAt   DateTime?
   endAt     DateTime?
   minutes   Int?
-  role      StaffRole
   classId   String?
   sessionId String?
 
@@ -171,6 +170,7 @@ enum WageUnit {
 enum StaffRole {
   TUTOR // 講師（クラス担当）
   OPERATION // 運営/受付/監督など（クラス無しでもOK）
+  STAFF
 }
 
 enum Weekday {
