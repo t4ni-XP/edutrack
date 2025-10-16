@@ -6,8 +6,8 @@ import {
   TableSortLabel, TablePagination
 } from "@mui/material";
 
-export type Accessor<T> = (row: T) => React.ReactNode;
-export type SortAccessor<T> = (row: T) => string | number | Date | null;
+export type Accessor<T> = (_row: T) => React.ReactNode;
+export type SortAccessor<T> = (_row: T) => string | number | Date | null;
 
 export interface Column<T> {
   key: string;
@@ -16,7 +16,7 @@ export interface Column<T> {
   align?: "left" | "right" | "center";
   accessor: Accessor<T>;            // 表示
   sortAccessor?: SortAccessor<T>;   // ソート用（未指定ならソート不可）
-  renderEditCell?: (row: T, onChange: (next: Partial<T>) => void) => React.ReactNode; // 任意: 編集
+  renderEditCell?: (_row: T, _onChange: (_next: Partial<T>) => void) => React.ReactNode; // 任意: 編集
 }
 
 export interface DataTableProps<T> {
@@ -26,11 +26,26 @@ export interface DataTableProps<T> {
   stickyHeader?: boolean;
   initialSort?: { key: string; direction: "asc" | "desc" };
   pageSizeOptions?: number[];
-  onRowClick?: (row: T) => void;
+  onRowClick?: (_row: T) => void;
   // 編集系（任意）
   editable?: boolean;
-  onRowsChange?: (next: T[]) => void;
-  getRowId?: (row: T) => string | number;
+  onRowsChange?: (_next: T[]) => void;
+  getRowId?: (_row: T) => string | number;
+}
+
+function defaultGetRowId<T>(r: T): string | number {
+  if (typeof r === "object" && r !== null && "id" in (r as object)) {
+    const id = (r as { id?: unknown }).id;
+    if (typeof id === "string" || typeof id === "number") return id;
+  }
+  return JSON.stringify(r);
+}
+
+function toComparable(v: string | number | Date | null): number | string {
+  if (v == null) return Number.NEGATIVE_INFINITY; // nullは常に小さく
+  if (v instanceof Date) return v.getTime();
+  if (typeof v === "number") return v;
+  return v; // string
 }
 
 export default function DataTable<T>({
@@ -43,7 +58,7 @@ export default function DataTable<T>({
   onRowClick,
   editable = false,
   onRowsChange,
-  getRowId = (r: any) => r.id ?? JSON.stringify(r),
+  getRowId = defaultGetRowId,
 }: DataTableProps<T>) {
   const [orderBy, setOrderBy] = React.useState<string | undefined>(initialSort?.key);
   const [order, setOrder] = React.useState<"asc" | "desc">(initialSort?.direction ?? "asc");
@@ -64,9 +79,16 @@ export default function DataTable<T>({
     const arr = [...data].sort((a, b) => {
       const va = col.sortAccessor!(a);
       const vb = col.sortAccessor!(b);
-      const na = va instanceof Date ? va.getTime() : (va ?? 0 as any);
-      const nb = vb instanceof Date ? vb.getTime() : (vb ?? 0 as any);
-      return (na < nb ? -1 : na > nb ? 1 : 0) * (order === "asc" ? 1 : -1);
+      const ca = toComparable(va);
+      const cb = toComparable(vb);
+      let cmp = 0;
+      if (typeof ca === "number" && typeof cb === "number") {
+        cmp = ca - cb;
+      } else {
+        // どちらかが文字列なら文字列比較に寄せる
+        cmp = String(ca).localeCompare(String(cb));
+      }
+      return cmp * (order === "asc" ? 1 : -1);
     });
     return arr;
   }, [data, orderBy, order, colMap]);

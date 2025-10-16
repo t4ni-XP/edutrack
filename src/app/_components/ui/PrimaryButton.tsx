@@ -6,8 +6,8 @@ import { SxProps, Theme } from "@mui/material/styles";
 import NextLink from "next/link";
 
 type PrimaryButtonProps = Omit<ButtonProps, "variant" | "color" | "size" | "href"> & {
-  href: string;            
   label: string;
+  href?: string;
   width?: number | string;
   height?: number | string;
   rounded?: number;
@@ -32,39 +32,57 @@ export default function PrimaryButton({
   startIcon,
   endIcon,
   sx,
+  ...rest
 }: PrimaryButtonProps) {
   const hover = hoverBgColor ?? darken(bgColor, 0.08);
+  const { type, ...restWithoutType } = rest;
+  const styles = {
+    width,
+    height,
+    minWidth: width,
+    minHeight: height,
+    borderRadius: rounded,
+    bgcolor: bgColor,
+    color: textColor,
+    textTransform: "none",
+    fontWeight: 700,
+    fontSize: 20,
+    lineHeight: 1.2,
+    "&:hover": { bgcolor: hover },
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    px: 2,
+    ...sx,
+  } satisfies SxProps<Theme>;
 
+  if (href) {
+    return (
+      <Button
+        component={NextLink}
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        variant="contained"
+        disableElevation
+        startIcon={startIcon}
+        endIcon={endIcon}
+        sx={styles}
+        {...restWithoutType}
+      >
+        {label}
+      </Button>
+    );
+  }
   return (
     <Button
-      component={NextLink}
-      href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
       variant="contained"
       disableElevation
       startIcon={startIcon}
       endIcon={endIcon}
-      sx={{
-        width,
-        height,
-        minWidth: width,
-        minHeight: height,
-        borderRadius: rounded,
-        bgcolor: bgColor,
-        color: textColor,
-        textTransform: "none",
-        fontWeight: 700,
-        fontSize: 20,
-        lineHeight: 1.2,
-        "&:hover": { bgcolor: hover },
-        // 行高や文字の収まりを安定させる
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        px: 2,
-        ...sx,
-      }}
+      type={type ?? "button"}
+      sx={styles}
+      {...restWithoutType}
     >
       {label}
     </Button>
