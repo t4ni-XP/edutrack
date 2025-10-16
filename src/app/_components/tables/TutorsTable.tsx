@@ -2,9 +2,9 @@
 "use client";
 import { Chip } from "@mui/material";
 import DataTable, { Column } from "./DataTable";
-import type { TutorRow } from "@/mock/mastar";
+import type { TutorListRow } from "@/app/master/tutors/types";
 
-const columns: Column<TutorRow>[] = [
+const columns: Column<TutorListRow>[] = [
   { key: "name", header: "氏名", accessor: (r) => r.name, sortAccessor: (r) => r.name },
   { key: "email", header: "Email", accessor: (r) => r.email, sortAccessor: (r) => r.email },
   { key: "subjects", header: "担当科目", accessor: (r) => r.subjects.join(", ") },
@@ -53,6 +53,12 @@ const columns: Column<TutorRow>[] = [
   },
 ];
 
-export default function TutorsTable({ rows }: { rows: TutorRow[] }) {
-  return <DataTable rows={rows} columns={columns} stickyHeader />;
+export default function TutorsTable({
+  rows,
+  onRowClick,
+}: {
+  rows: TutorListRow[];
+  onRowClick?: (_row: TutorListRow) => void;
+}) {
+  return <DataTable rows={rows} columns={columns} stickyHeader onRowClick={onRowClick} />;
 }
