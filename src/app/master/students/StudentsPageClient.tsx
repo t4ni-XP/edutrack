@@ -66,11 +66,11 @@ function normalizeForm(form: StudentFormState): NormalizedForm | { error: string
   if (!name) {
     return { error: "氏名を入力してください。" };
   }
-  if (!Number.isInteger(grade) || grade <= 0) {
+  if (!Number.isInteger(grade) || grade <= 0 || grade >= 6) {
     return { error: "学年は 1 以上の整数で入力してください。" };
   }
   if (!Number.isInteger(generation) || generation <= 0) {
-    return { error: "期（世代）は 1 以上の整数で入力してください。" };
+    return { error: "期は 1 以上の整数で入力してください。" };
   }
 
   return {
@@ -268,10 +268,12 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
           {globalMessage.text}
         </Alert>
       )}
-      <Box display="flex" justifyContent="flex-end">
+      <Box p={4}>
+      <StudentsTable rows={rows} onRowClick={handleRowClick} />
+      </Box>
+      <Box display="flex" justifyContent="flex-front" px={4}>
         <PrimaryButton label="生徒を追加" onClick={handleCreateOpen} />
       </Box>
-      <StudentsTable rows={rows} onRowClick={handleRowClick} />
 
       <Dialog
         open={createOpen}
