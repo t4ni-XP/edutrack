@@ -1,65 +1,58 @@
-import ClassTable from "../_components/ClassTable";
 import Header from "../_components/ui/Header";
 import { Box } from "@mui/material";
+import prisma from "@/lib/prisma";
+import { ClassType, Weekday } from "@/generated/prisma";
+import { serializeClass } from "@/lib/class-utils";
+import ClassesPageClient from "./ClassesPageClient";
+import type { ClassDetail } from "./types";
 
-type G = 1 | 2 | 3 | 4 | 5 | 6;
-const s = (name: string, grade: G) => ({ name, grade });
-const mockRows = [
-  {
-    id: "mon-101",
-    weekday: "月",
-    className: "英検対策",
-    classroom: "A-101",
-    tutor: ["田中", "佐藤"],
-    students: [s("alice", 2), s("bob", 1), s("chris", 2), s("diana", 1)],
-  },
-  {
-    id: "mon-203",
-    weekday: "月",
-    className: "TOEIC対策",
-    classroom: "B-203",
-    tutor: "山本",
-    students: [s("erika", 5), s("fumi", 5), s("gen", 5)],
-  },
-  {
-    id: "tue-110",
-    weekday: "火",
-    className: "個別指導",
-    classroom: "C-110",
-    tutor: "小林",
-    students: [s("haru", 6), s("ito", 6)],
-  },
-  {
-    id: "tue-305",
-    weekday: "火",
-    className: "個別指導",
-    classroom: "D-305",
-    tutor: ["高橋"],
-    students: [s("jack", 3), s("ken", 3), s("lena", 3), s("mio", 3), s("noa", 3)],
-  },
-  {
-    id: "wed-101",
-    weekday: "水",
-    className: "IB",
-    classroom: "A-101",
-    tutor: "斎藤",
-    students: [s("olivia", 4), s("paul", 4)],
-  },
-];
+export default async function ClassesPage() {
+  const [classes, students, tutors] = await Promise.all([
+    prisma.class.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        enrollments: {
+          include: { student: true },
+          orderBy: { student: { name: "asc" } },
+        },
+        teachings: {
+          include: { tutor: true },
+          orderBy: { tutor: { name: "asc" } },
+        },
+      },
+    }),
+    prisma.student.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, grade: true },
+    }),
+    prisma.tutor.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, subjects: true },
+    }),
+  ]);
 
-export default function ClassPage() {
+  const classDetails: ClassDetail[] = classes.map(serializeClass);
+  const studentOptions = students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    grade: student.grade,
+  }));
+  const tutorOptions = tutors.map((tutor) => ({
+    id: tutor.id,
+    name: tutor.name,
+    subjects: tutor.subjects,
+  }));
+
   return (
     <>
-      <Header signInStatus={true} />
+      <Header signInStatus />
       <Box sx={{ width: "80%", mx: "auto", my: 4 }}>
-        <ClassTable
-          rows={mockRows}
-          weekday
-          className
-          classroom
-          tutor
-          students
-          studentsMode="detailed"
+        <ClassesPageClient
+          initialClasses={classDetails}
+          students={studentOptions}
+          tutors={tutorOptions}
+          classTypes={Object.values(ClassType)}
+          weekdays={Object.values(Weekday)}
         />
       </Box>
     </>
