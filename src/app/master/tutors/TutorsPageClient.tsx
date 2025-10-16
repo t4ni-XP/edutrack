@@ -1,11 +1,5 @@
 "use client";
-import {
-  useState,
-  useEffect,
-  useCallback,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from "react";
 import {
   Alert,
   Box,
@@ -93,7 +87,10 @@ interface TutorsPageClientProps {
 
 export default function TutorsPageClient({ initialRows }: TutorsPageClientProps) {
   const [rows, setRows] = useState<TutorListRow[]>(initialRows);
-  const [globalMessage, setGlobalMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [globalMessage, setGlobalMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<TutorFormState>(emptyForm);
@@ -123,10 +120,11 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
     }
   }, []);
 
-  const handleCreateFieldChange = (field: "name" | "email") => (event: ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setCreateForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleCreateFieldChange =
+    (field: "name" | "email") => (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      setCreateForm((prev) => ({ ...prev, [field]: value }));
+    };
 
   const handleCreateNeedsPickupChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCreateForm((prev) => ({ ...prev, needsPickup: event.target.checked }));
@@ -139,11 +137,12 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
     setCreateForm((prev) => ({ ...prev, subjects: list }));
   };
 
-  const handleEditFieldChange = (field: "name" | "email") => (event: ChangeEvent<HTMLInputElement>) => {
-    if (!editForm) return;
-    const { value } = event.target;
-    setEditForm({ ...editForm, [field]: value });
-  };
+  const handleEditFieldChange =
+    (field: "name" | "email") => (event: ChangeEvent<HTMLInputElement>) => {
+      if (!editForm) return;
+      const { value } = event.target;
+      setEditForm({ ...editForm, [field]: value });
+    };
 
   const handleEditNeedsPickupChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (!editForm) return;
@@ -202,7 +201,8 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
       });
       if (!res.ok) {
         const payload = await res.json().catch(() => null);
-        const message = payload?.message ?? "登録に失敗しました。時間をおいてから再度お試しください。";
+        const message =
+          payload?.message ?? "登録に失敗しました。時間をおいてから再度お試しください。";
         setCreateError(message);
         return;
       }
@@ -240,7 +240,8 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
       });
       if (!res.ok) {
         const payload = await res.json().catch(() => null);
-        const message = payload?.message ?? "更新に失敗しました。時間をおいてから再度お試しください。";
+        const message =
+          payload?.message ?? "更新に失敗しました。時間をおいてから再度お試しください。";
         setEditError(message);
         return;
       }
@@ -279,7 +280,8 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
       onChange={onChange}
       SelectProps={{
         multiple: true,
-        renderValue: (selected) => (Array.isArray(selected) ? (selected as SubjectType[]).join(", ") : ""),
+        renderValue: (selected) =>
+          Array.isArray(selected) ? (selected as SubjectType[]).join(", ") : "",
       }}
       helperText={helperText ?? "複数選択可"}
     >
@@ -298,10 +300,12 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
           {globalMessage.text}
         </Alert>
       )}
-      <Box display="flex" justifyContent="flex-end">
+      <Box p={4}>
+        <TutorsTable rows={rows} onRowClick={handleRowClick} />
+      </Box>
+      <Box display="flex" justifyContent="flex-start" px={4}>
         <PrimaryButton label="講師を追加" onClick={handleCreateOpen} />
       </Box>
-      <TutorsTable rows={rows} onRowClick={handleRowClick} />
 
       <Dialog
         open={createOpen}
@@ -320,7 +324,12 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
         <DialogContent sx={{ pt: 1 }}>
           <Stack spacing={2} mt={1}>
             {createError && <Alert severity="error">{createError}</Alert>}
-            <TextField label="氏名" value={createForm.name} onChange={handleCreateFieldChange("name")} required />
+            <TextField
+              label="氏名"
+              value={createForm.name}
+              onChange={handleCreateFieldChange("name")}
+              required
+            />
             <TextField
               label="メールアドレス"
               value={createForm.email}
@@ -329,13 +338,20 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
             />
             {renderSubjectsSelect(createForm.subjects, handleCreateSubjectsChange, undefined)}
             <FormControlLabel
-              control={<Checkbox checked={createForm.needsPickup} onChange={handleCreateNeedsPickupChange} />}
+              control={
+                <Checkbox
+                  checked={createForm.needsPickup}
+                  onChange={handleCreateNeedsPickupChange}
+                />
+              }
               label="送迎が必要"
             />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleCreateClose} disabled={createSubmitting}>キャンセル</Button>
+          <Button onClick={handleCreateClose} disabled={createSubmitting}>
+            キャンセル
+          </Button>
           <Button type="submit" variant="contained" disabled={createSubmitting}>
             {createSubmitting ? "登録中..." : "登録"}
           </Button>
@@ -360,7 +376,12 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
           {selected && editForm && (
             <Stack spacing={2} mt={1}>
               {editError && <Alert severity="error">{editError}</Alert>}
-              <TextField label="氏名" value={editForm.name} onChange={handleEditFieldChange("name")} required />
+              <TextField
+                label="氏名"
+                value={editForm.name}
+                onChange={handleEditFieldChange("name")}
+                required
+              />
               <TextField
                 label="メールアドレス"
                 value={editForm.email}
@@ -369,14 +390,18 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
               />
               {renderSubjectsSelect(editForm.subjects, handleEditSubjectsChange, undefined)}
               <FormControlLabel
-                control={<Checkbox checked={editForm.needsPickup} onChange={handleEditNeedsPickupChange} />}
+                control={
+                  <Checkbox checked={editForm.needsPickup} onChange={handleEditNeedsPickupChange} />
+                }
                 label="送迎が必要"
               />
 
               <Divider />
 
               <Typography variant="subtitle2">ID</Typography>
-              <Typography variant="body2" sx={{ wordBreak: "break-all" }}>{selected.id}</Typography>
+              <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                {selected.id}
+              </Typography>
 
               <TextField
                 label="担当クラス数"
@@ -412,7 +437,9 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleDetailClose} disabled={editSubmitting}>閉じる</Button>
+          <Button onClick={handleDetailClose} disabled={editSubmitting}>
+            閉じる
+          </Button>
           <Button type="submit" variant="contained" disabled={editSubmitting || !selected}>
             {editSubmitting ? "更新中..." : "保存"}
           </Button>
