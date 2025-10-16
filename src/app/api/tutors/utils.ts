@@ -1,13 +1,15 @@
-import { Prisma, Subject, type Tutor } from "@/generated/prisma";
+import { Prisma, StaffRole, Subject, type Tutor } from "@/generated/prisma";
 import type { TutorListRow } from "@/app/master/tutors/types";
 
 const subjectSet = new Set<Subject>(Object.values(Subject));
+const roleSet = new Set<StaffRole>(Object.values(StaffRole));
 
 export type NormalizedTutorPayload = {
   name: string;
   email: string;
   needsPickup: boolean;
   subjects: Subject[];
+  role: StaffRole;
 };
 
 function parseSubjects(value: unknown): Subject[] | null {
@@ -40,11 +42,18 @@ function parseNeedsPickup(value: unknown): boolean | null {
   return null;
 }
 
+function parseRole(value: unknown): StaffRole | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.toUpperCase() as StaffRole;
+  return roleSet.has(normalized) ? normalized : null;
+}
+
 export function normalizeTutorPayload(payload: Record<string, unknown>) {
   const name = typeof payload.name === "string" ? payload.name.trim() : "";
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
   const pickup = parseNeedsPickup(payload.needsPickup);
   const subjects = parseSubjects(payload.subjects);
+  const role = parseRole(payload.role ?? StaffRole.TUTOR) ?? StaffRole.TUTOR;
 
   if (!name) {
     return { error: "名前は必須です。" } as const;
@@ -61,12 +70,16 @@ export function normalizeTutorPayload(payload: Record<string, unknown>) {
   if (subjects === null) {
     return { error: "担当科目の値が不正です。" } as const;
   }
+  if (!roleSet.has(role)) {
+    return { error: "役割の値が不正です。" } as const;
+  }
 
   const data: NormalizedTutorPayload = {
     name,
     email,
     needsPickup: pickup,
     subjects,
+    role,
   };
 
   return { data } as const;
@@ -79,6 +92,7 @@ export function serializeTutor(tutor: Tutor): TutorListRow {
     email: tutor.email,
     needsPickup: tutor.needsPickup,
     subjects: tutor.subjects,
+     role: tutor.role,
     classCount: 0,
     sessionsWorked: 0,
     minutesWorked: 0,

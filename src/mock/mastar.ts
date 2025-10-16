@@ -29,6 +29,7 @@ export type TutorRow = {
   email: string;
   needsPickup: boolean;
   subjects: string[];
+  role: "TUTOR" | "OPERATION" | "STAFF";
   classCount: number; // 担当クラス数
   sessionsWorked: number; // 担当した授業回数（期間内）
   minutesWorked: number; // 授業での勤務分（期間内）
@@ -133,16 +134,15 @@ export function buildTutorsRows(opts?: { start?: Date; end?: Date }): TutorRow[]
 
   return tutors.map((tu) => {
     const classCount = classesByTutor.get(tu.id)?.size ?? 0;
+    const tutorRole = (tu as { role?: TutorRow["role"] }).role ?? "TUTOR";
 
-    // 授業担当のログ（sessionId がある・role=TUTOR）
-    const teachLogs = logsInRange.filter(
-      (w) => w.tutorId === tu.id && w.sessionId && w.role === "TUTOR",
-    );
+    // 授業担当のログ（sessionId があるものを授業とみなす）
+    const teachLogs = logsInRange.filter((w) => w.tutorId === tu.id && w.sessionId);
     const sessionsWorked = teachLogs.length;
     const minutesWorked = teachLogs.reduce((sum, w) => sum + (w.minutes ?? 0), 0);
 
-    // 運営業務
-    const opsLogs = logsInRange.filter((w) => w.tutorId === tu.id && w.role === "OPERATION");
+    // 運営業務（sessionId のないログを想定）
+    const opsLogs = logsInRange.filter((w) => w.tutorId === tu.id && !w.sessionId);
     const opMinutes = opsLogs.reduce((sum, w) => sum + (w.minutes ?? 0), 0);
 
     return {
@@ -151,6 +151,7 @@ export function buildTutorsRows(opts?: { start?: Date; end?: Date }): TutorRow[]
       needsPickup: tu.needsPickup,
       email: tu.email,
       subjects: tu.subjects,
+      role: tutorRole,
       classCount,
       sessionsWorked,
       minutesWorked,

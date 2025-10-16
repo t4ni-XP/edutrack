@@ -4,10 +4,21 @@ import { Chip } from "@mui/material";
 import DataTable, { Column } from "./DataTable";
 import type { TutorListRow } from "@/app/master/tutors/types";
 
+const roleLabels: Record<string, string> = {
+  TUTOR: "講師",
+  OPERATION: "運営",
+  STAFF: "スタッフ",
+};
+
 const columns: Column<TutorListRow>[] = [
   { key: "name", header: "氏名", accessor: (r) => r.name, sortAccessor: (r) => r.name },
   { key: "email", header: "Email", accessor: (r) => r.email, sortAccessor: (r) => r.email },
   { key: "subjects", header: "担当科目", accessor: (r) => r.subjects.join(", ") },
+  {
+    key: "role",
+    header: "役割",
+    accessor: (r) => roleLabels[r.role] ?? r.role,
+  },
   {
     key: "needsPickup",
     header: "送迎",

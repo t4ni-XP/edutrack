@@ -28,13 +28,14 @@ model Student {
 }
 
 model Tutor {
-  id        String    @id @default(cuid())
-  name      String
-  needsPickup  Boolean   @default(false) // ← grade/transfer だと意味が曖昧なのでリネーム推奨
-  subjects  Subject[] // ← 文字列配列より enum の方が堅い（必要に応じて）
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  name        String
+  needsPickup Boolean   @default(false) // ← grade/transfer だと意味が曖昧なのでリネーム推奨
+  subjects    Subject[] // ← 文字列配列より enum の方が堅い（必要に応じて）
+  email       String    @unique
+  createdAt   DateTime  @default(now())
+  role        StaffRole @default(TUTOR)
+  updatedAt   DateTime  @updatedAt
 
   teachings Teaching[] // ← 中間テーブル（複数講師に対応）
   WorkLog   WorkLog[]
@@ -137,7 +138,6 @@ model WorkLog {
   startAt   DateTime?
   endAt     DateTime?
   minutes   Int?
-  role      StaffRole
   classId   String?
   sessionId String?
 
@@ -170,6 +170,7 @@ enum WageUnit {
 enum StaffRole {
   TUTOR // 講師（クラス担当）
   OPERATION // 運営/受付/監督など（クラス無しでもOK）
+  STAFF
 }
 
 enum Weekday {

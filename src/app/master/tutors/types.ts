@@ -1,4 +1,4 @@
-import type { Subject } from "@/generated/prisma";
+import type { StaffRole, Subject } from "@/generated/prisma";
 
 export type TutorListRow = {
   id: string;
@@ -6,6 +6,7 @@ export type TutorListRow = {
   email: string;
   needsPickup: boolean;
   subjects: Subject[];
+  role: StaffRole;
   classCount: number;
   sessionsWorked: number;
   minutesWorked: number;

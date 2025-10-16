@@ -82,7 +82,7 @@ export default function Dashboard() {
           <ClassesTable rows={mockRows} />
         </CardContent>
       </Card>
-      <PrimaryButton href="/classes" label="出席管理" />
+      <PrimaryButton href="/attendance" label="出席管理" />
     </Box>
   );
 }
