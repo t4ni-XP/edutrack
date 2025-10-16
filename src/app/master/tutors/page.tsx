@@ -14,6 +14,7 @@ export default async function TutorsPage() {
     email: tutor.email,
     needsPickup: tutor.needsPickup,
     subjects: tutor.subjects,
+    role: tutor.role,
     classCount: 0,
     sessionsWorked: 0,
     minutesWorked: 0,

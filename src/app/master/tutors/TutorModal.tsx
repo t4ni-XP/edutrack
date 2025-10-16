@@ -19,10 +19,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
-import { Subject, type Subject as SubjectType } from "@/generated/prisma";
+import { StaffRole, Subject, type Subject as SubjectType } from "@/generated/prisma";
 import type { TutorListRow } from "./types";
 
 export type TutorPayload = {
@@ -30,6 +30,7 @@ export type TutorPayload = {
   email: string;
   needsPickup: boolean;
   subjects: SubjectType[];
+  role: StaffRole;
 };
 
 type TutorFormState = {
@@ -37,9 +38,11 @@ type TutorFormState = {
   email: string;
   needsPickup: boolean;
   subjects: SubjectType[];
+  role: StaffRole;
 };
 
 const subjectOptions = Object.values(Subject) as SubjectType[];
+const staffRoleOptions = Object.values(StaffRole) as StaffRole[];
 
 function createFormState(tutor?: TutorListRow | null): TutorFormState {
   if (!tutor) {
@@ -48,6 +51,7 @@ function createFormState(tutor?: TutorListRow | null): TutorFormState {
       email: "",
       needsPickup: false,
       subjects: [],
+      role: StaffRole.TUTOR,
     };
   }
   return {
@@ -55,6 +59,7 @@ function createFormState(tutor?: TutorListRow | null): TutorFormState {
     email: tutor.email,
     needsPickup: tutor.needsPickup,
     subjects: tutor.subjects,
+    role: tutor.role,
   };
 }
 
@@ -65,6 +70,7 @@ function validate(form: TutorFormState) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "メールアドレスの形式が正しくありません。";
   const invalidSubject = form.subjects.find((subject) => !subjectOptions.includes(subject));
   if (invalidSubject) return "担当科目の値が不正です。";
+  if (!staffRoleOptions.includes(form.role)) return "役割の値が不正です。";
   return null;
 }
 
@@ -74,6 +80,7 @@ function toPayload(form: TutorFormState): TutorPayload {
     email: form.email.trim(),
     needsPickup: form.needsPickup,
     subjects: Array.from(new Set(form.subjects)),
+    role: form.role,
   };
 }
 
@@ -88,14 +95,7 @@ interface TutorModalProps {
   onUpdate?: (id: string, payload: TutorPayload) => Promise<TutorListRow | void>;
 }
 
-export default function TutorModal({
-  open,
-  mode,
-  tutor,
-  onClose,
-  onCreate,
-  onUpdate,
-}: TutorModalProps) {
+export default function TutorModal({ open, mode, tutor, onClose, onCreate, onUpdate }: TutorModalProps) {
   const isCreate = mode === "create";
   const [form, setForm] = useState<TutorFormState>(() => createFormState(tutor));
   const [editing, setEditing] = useState(isCreate);
@@ -134,10 +134,12 @@ export default function TutorModal({
   const handleSubjectsChange = (event: SelectChangeEvent<SubjectType[]>) => {
     const value = event.target.value;
     const parsed = typeof value === "string" ? value.split(",") : value;
-    const list = parsed.filter((item): item is SubjectType =>
-      subjectOptions.includes(item as SubjectType),
-    );
+    const list = parsed.filter((item): item is SubjectType => subjectOptions.includes(item as SubjectType));
     setForm((prev) => ({ ...prev, subjects: Array.from(new Set(list)) }));
+  };
+
+  const handleRoleChange = (event: SelectChangeEvent<StaffRole>) => {
+    setForm((prev) => ({ ...prev, role: event.target.value as StaffRole }));
   };
 
   const metadata = useMemo(() => {
@@ -145,12 +147,8 @@ export default function TutorModal({
     const createdAt = new Date(tutor.createdAt);
     const updatedAt = new Date(tutor.updatedAt);
     return {
-      createdAt: Number.isNaN(createdAt.getTime())
-        ? tutor.createdAt
-        : createdAt.toLocaleString("ja-JP"),
-      updatedAt: Number.isNaN(updatedAt.getTime())
-        ? tutor.updatedAt
-        : updatedAt.toLocaleString("ja-JP"),
+      createdAt: Number.isNaN(createdAt.getTime()) ? tutor.createdAt : createdAt.toLocaleString("ja-JP"),
+      updatedAt: Number.isNaN(updatedAt.getTime()) ? tutor.updatedAt : updatedAt.toLocaleString("ja-JP"),
     };
   }, [tutor]);
 
@@ -235,6 +233,22 @@ export default function TutorModal({
             InputProps={{ readOnly }}
           />
           <FormControl fullWidth>
+            <InputLabel id="tutor-role-label">役割</InputLabel>
+            <Select
+              labelId="tutor-role-label"
+              label="役割"
+              value={form.role}
+              onChange={handleRoleChange}
+              disabled={readOnly}
+            >
+              {staffRoleOptions.map((role) => (
+                <MenuItem key={role} value={role}>
+                  {role}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
             <InputLabel id="tutor-subjects-label">担当科目</InputLabel>
             <Select
               labelId="tutor-subjects-label"
@@ -257,13 +271,7 @@ export default function TutorModal({
             <FormHelperText>複数選択可</FormHelperText>
           </FormControl>
           <FormControlLabel
-            control={
-              <Checkbox
-                checked={form.needsPickup}
-                onChange={handleNeedsPickupChange}
-                disabled={readOnly}
-              />
-            }
+            control={<Checkbox checked={form.needsPickup} onChange={handleNeedsPickupChange} disabled={readOnly} />}
             label="送迎が必要"
           />
 
