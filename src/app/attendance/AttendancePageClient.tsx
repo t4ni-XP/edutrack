@@ -180,7 +180,7 @@ export default function AttendancePageClient({ dateIso, students, tutors }: Prop
                 <Box key={key}>
                   <Typography variant="subtitle1">
                     {row.tutorName}
-                    {row.className ? `／${row.className}` : "／スタッフ"} ({row.role})
+                    {row.className ? `／${row.className}` : "／スタッフ"}
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center">
                     {tutorStatusOptions.map((option) => (
