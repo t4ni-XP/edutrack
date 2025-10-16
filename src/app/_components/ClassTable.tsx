@@ -36,6 +36,7 @@ interface ClassTableProps {
 
   // 学年表示のモード設定
   studentsMode?: StudentsMode; // デフォ: "detailed"
+  onRowClick?: (row: ClassTableRow) => void;
 }
 
 export default function ClassTable({
@@ -46,6 +47,7 @@ export default function ClassTable({
   tutor = false,
   students = false,
   studentsMode = "detailed",
+  onRowClick,
 }: ClassTableProps) {
   const columns = [
     { key: "weekday", label: "曜日", enabled: weekday },
@@ -129,7 +131,12 @@ export default function ClassTable({
             </TableRow>
           ) : (
             rows.map((row) => (
-              <TableRow key={row.id} hover>
+              <TableRow
+                key={row.id}
+                hover
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                sx={onRowClick ? { cursor: "pointer" } : undefined}
+              >
                 {columns.map((col) => (
                   <TableCell key={col.key}>{renderCell(row, col.key)}</TableCell>
                 ))}

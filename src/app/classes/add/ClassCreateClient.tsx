@@ -18,7 +18,7 @@ import {
   Typography,
   ListItemText,
 } from "@mui/material";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useState } from "react";
@@ -78,16 +78,16 @@ export default function ClassCreateClient({
     setTutorWages({});
   };
 
-  const handleFieldChange = (field: keyof typeof form) => (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { value } = event.target;
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleFieldChange =
+    (field: keyof typeof form) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { value } = event.target;
+      setForm((prev) => ({ ...prev, [field]: value }));
+    };
 
-  const handleSelectChange = (field: "classType" | "weekday") => (event: SelectChangeEvent<string>) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }));
-  };
+  const handleSelectChange =
+    (field: "classType" | "weekday") => (event: SelectChangeEvent<string>) => {
+      setForm((prev) => ({ ...prev, [field]: event.target.value }));
+    };
 
   const handleStudentSelect = (event: SelectChangeEvent<unknown>) => {
     const value = event.target.value;
@@ -123,7 +123,8 @@ export default function ClassCreateClient({
     if (!form.weekday) return "曜日を選択してください。";
     if (!form.classRoom.trim()) return "教室を入力してください。";
     const studentFee = Number(form.studentUnitFee);
-    if (!Number.isFinite(studentFee) || studentFee <= 0) return "生徒の単価は 1 以上の数値で入力してください。";
+    if (!Number.isFinite(studentFee) || studentFee <= 0)
+      return "生徒の単価は 1 以上の数値で入力してください。";
 
     if (selectedTutorIds.length === 0) {
       return "担当講師を少なくとも1名選択してください。";
@@ -178,7 +179,9 @@ export default function ClassCreateClient({
 
       if (!response.ok) {
         const result = await response.json().catch(() => null);
-        setFormError(result?.message ?? "クラスの作成に失敗しました。時間をおいて再度お試しください。");
+        setFormError(
+          result?.message ?? "クラスの作成に失敗しました。時間をおいて再度お試しください。",
+        );
         return;
       }
 
@@ -216,7 +219,13 @@ export default function ClassCreateClient({
           <CardContent>
             <Grid container spacing={2}>
               <Grid xs={12} md={6}>
-                <TextField label="クラス名" value={form.name} onChange={handleFieldChange("name")} fullWidth required />
+                <TextField
+                  label="クラス名"
+                  value={form.name}
+                  onChange={handleFieldChange("name")}
+                  fullWidth
+                  required
+                />
               </Grid>
               <Grid xs={12} md={6}>
                 <FormControl fullWidth required>
