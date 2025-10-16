@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import ClassesTable from "./tables/ClassesTable";
 import PrimaryButton from "./ui/PrimaryButton";
 import { buildClassVMs } from "@/mock/mock";

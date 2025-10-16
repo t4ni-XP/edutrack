@@ -13,12 +13,17 @@ export type NormalizedTutorPayload = {
 function parseSubjects(value: unknown): Subject[] | null {
   if (value == null) return [];
   if (Array.isArray(value)) {
-    const list = value.filter((v): v is Subject => typeof v === "string" && subjectSet.has(v as Subject));
+    const list = value.filter(
+      (v): v is Subject => typeof v === "string" && subjectSet.has(v as Subject),
+    );
     if (list.length !== value.length) return null;
     return list;
   }
   if (typeof value === "string") {
-    const parts = value.split(",").map((v) => v.trim()).filter(Boolean);
+    const parts = value
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
     const list = parts.filter((v): v is Subject => subjectSet.has(v as Subject));
     return list.length === parts.length ? list : null;
   }
@@ -78,8 +83,10 @@ export function serializeTutor(tutor: Tutor): TutorListRow {
     sessionsWorked: 0,
     minutesWorked: 0,
     opMinutes: 0,
-    createdAt: tutor.createdAt instanceof Date ? tutor.createdAt.toISOString() : String(tutor.createdAt),
-    updatedAt: tutor.updatedAt instanceof Date ? tutor.updatedAt.toISOString() : String(tutor.updatedAt),
+    createdAt:
+      tutor.createdAt instanceof Date ? tutor.createdAt.toISOString() : String(tutor.createdAt),
+    updatedAt:
+      tutor.updatedAt instanceof Date ? tutor.updatedAt.toISOString() : String(tutor.updatedAt),
   };
 }
 

@@ -2,8 +2,15 @@
 "use client";
 import * as React from "react";
 import {
-  Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper,
-  TableSortLabel, TablePagination
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+  Paper,
+  TableSortLabel,
+  TablePagination,
 } from "@mui/material";
 
 export type Accessor<T> = (_row: T) => React.ReactNode;
@@ -14,8 +21,8 @@ export interface Column<T> {
   header: string;
   width?: number | string;
   align?: "left" | "right" | "center";
-  accessor: Accessor<T>;            // 表示
-  sortAccessor?: SortAccessor<T>;   // ソート用（未指定ならソート不可）
+  accessor: Accessor<T>; // 表示
+  sortAccessor?: SortAccessor<T>; // ソート用（未指定ならソート不可）
   renderEditCell?: (_row: T, _onChange: (_next: Partial<T>) => void) => React.ReactNode; // 任意: 編集
 }
 
@@ -68,7 +75,7 @@ export default function DataTable<T>({
   React.useEffect(() => setData(rows), [rows]);
 
   const colMap = React.useMemo(() => {
-    const m = new Map(columns.map(c => [c.key, c]));
+    const m = new Map(columns.map((c) => [c.key, c]));
     return m;
   }, [columns]);
 
@@ -99,8 +106,10 @@ export default function DataTable<T>({
   }, [sorted, page, rowsPerPage]);
 
   const handleSort = (key: string) => {
-    if (orderBy !== key) { setOrderBy(key); setOrder("asc"); }
-    else setOrder(order === "asc" ? "desc" : "asc");
+    if (orderBy !== key) {
+      setOrderBy(key);
+      setOrder("asc");
+    } else setOrder(order === "asc" ? "desc" : "asc");
   };
 
   const commitRow = (idx: number, patch: Partial<T>) => {
@@ -116,10 +125,14 @@ export default function DataTable<T>({
         <Table size={dense ? "small" : "medium"} stickyHeader={stickyHeader}>
           <TableHead>
             <TableRow>
-              {columns.map(c => {
+              {columns.map((c) => {
                 const sortable = !!c.sortAccessor;
                 return (
-                  <TableCell key={c.key} align={c.align} sx={{ width: c.width, backgroundColor: "background.paper" }}>
+                  <TableCell
+                    key={c.key}
+                    align={c.align}
+                    sx={{ width: c.width, backgroundColor: "background.paper" }}
+                  >
                     {sortable ? (
                       <TableSortLabel
                         active={orderBy === c.key}
@@ -128,7 +141,9 @@ export default function DataTable<T>({
                       >
                         {c.header}
                       </TableSortLabel>
-                    ) : c.header}
+                    ) : (
+                      c.header
+                    )}
                   </TableCell>
                 );
               })}
@@ -144,7 +159,7 @@ export default function DataTable<T>({
                   onClick={() => onRowClick?.(row)}
                   sx={{ cursor: onRowClick ? "pointer" : "default" }}
                 >
-                  {columns.map(col => (
+                  {columns.map((col) => (
                     <TableCell key={col.key} align={col.align}>
                       {editable && col.renderEditCell
                         ? col.renderEditCell(row, (patch) => commitRow(globalIdx, patch))
@@ -155,7 +170,11 @@ export default function DataTable<T>({
               );
             })}
             {paged.length === 0 && (
-              <TableRow><TableCell colSpan={columns.length} align="center">No data</TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  No data
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
@@ -166,7 +185,10 @@ export default function DataTable<T>({
         page={page}
         onPageChange={(_, p) => setPage(p)}
         rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
         rowsPerPageOptions={pageSizeOptions}
       />
     </Paper>

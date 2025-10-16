@@ -12,7 +12,14 @@ const statusLabel: Record<StudentListRow["status"], string> = {
 
 const columns: Column<StudentListRow>[] = [
   { key: "name", header: "氏名", accessor: (r) => r.name, sortAccessor: (r) => r.name },
-  { key: "grade", header: "学年", accessor: (r) => `${r.grade}年`, sortAccessor: (r) => r.grade, width: 100, align: "right" },
+  {
+    key: "grade",
+    header: "学年",
+    accessor: (r) => `${r.grade}年`,
+    sortAccessor: (r) => r.grade,
+    width: 100,
+    align: "right",
+  },
   {
     key: "status",
     header: "ステータス",
@@ -52,19 +59,32 @@ const columns: Column<StudentListRow>[] = [
   },
 ];
 
-export default function StudentsTable({ rows, editable = false, onRowsChange, onRowClick }: {
+export default function StudentsTable({
+  rows,
+  editable = false,
+  onRowsChange,
+  onRowClick,
+}: {
   rows: StudentListRow[];
   editable?: boolean;
   onRowsChange?: (_next: StudentListRow[]) => void;
   onRowClick?: (_row: StudentListRow) => void;
 }) {
   // 名前のみ編集可能とする例
-  const cols = columns.map((c) => c.key !== "name" ? c : ({
-    ...c,
-    renderEditCell: (row, commit) => (
-      <TextField size="small" defaultValue={row.name} onChange={(e) => commit({ name: e.target.value })} />
-    ),
-  }));
+  const cols = columns.map((c) =>
+    c.key !== "name"
+      ? c
+      : {
+          ...c,
+          renderEditCell: (row, commit) => (
+            <TextField
+              size="small"
+              defaultValue={row.name}
+              onChange={(e) => commit({ name: e.target.value })}
+            />
+          ),
+        },
+  );
   return (
     <DataTable
       rows={rows}

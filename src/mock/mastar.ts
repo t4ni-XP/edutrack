@@ -17,10 +17,10 @@ export type StudentRow = {
   name: string;
   grade: number;
   status: "ACTIVE" | "INACTIVE" | "GRADUATED";
-  classCount: number;           // 在籍クラス数（ACTIVEのみ）
-  billableCount: number;        // 請求対象回数（期間内）
-  presentCount: number;         // 出席回数（期間内）
-  absentCount: number;          // 欠席回数（期間内）
+  classCount: number; // 在籍クラス数（ACTIVEのみ）
+  billableCount: number; // 請求対象回数（期間内）
+  presentCount: number; // 出席回数（期間内）
+  absentCount: number; // 欠席回数（期間内）
 };
 
 export type TutorRow = {
@@ -29,10 +29,10 @@ export type TutorRow = {
   email: string;
   needsPickup: boolean;
   subjects: string[];
-  classCount: number;           // 担当クラス数
-  sessionsWorked: number;       // 担当した授業回数（期間内）
-  minutesWorked: number;        // 授業での勤務分（期間内）
-  opMinutes: number;            // 運営のみの勤務分（期間内）
+  classCount: number; // 担当クラス数
+  sessionsWorked: number; // 担当した授業回数（期間内）
+  minutesWorked: number; // 授業での勤務分（期間内）
+  opMinutes: number; // 運営のみの勤務分（期間内）
 };
 
 // ==== 期間ユーティリティ ====
@@ -55,11 +55,12 @@ export function buildStudentsRows(opts?: {
   end?: Date;
 }): StudentRow[] {
   const by = opts?.by ?? "session";
-  const { start, end } = opts?.start && opts?.end ? { start: opts.start, end: opts.end } : monthRange();
+  const { start, end } =
+    opts?.start && opts?.end ? { start: opts.start, end: opts.end } : monthRange();
 
   // 今月の HELD セッション
   const sessionsInRange = classSessions.filter(
-    (cs) => cs.status === "HELD" && inRange(cs.date, start, end)
+    (cs) => cs.status === "HELD" && inRange(cs.date, start, end),
   );
   const sessionsByClass = new Map<string, string[]>();
   const sessionsInRangeSet = new Set<string>();
@@ -71,27 +72,23 @@ export function buildStudentsRows(opts?: {
   });
 
   // 出席（期間内）
-  const attendanceInRange = attendance.filter((a) =>
-    sessionsInRangeSet.has(a.sessionId)
-  );
+  const attendanceInRange = attendance.filter((a) => sessionsInRangeSet.has(a.sessionId));
 
   // 学生ごとに集計
   return students.map((st) => {
     // ACTIVE 在籍のみ集計対象にする（必要に応じて変えてOK）
-    const myEnrolls = enrollments.filter(
-      (e) => e.studentId === st.id && e.status === "ACTIVE"
-    );
+    const myEnrolls = enrollments.filter((e) => e.studentId === st.id && e.status === "ACTIVE");
     const classIds = myEnrolls.map((e) => e.classId);
     const classIdSet = new Set(classIds);
     const classCount = classIds.length;
 
     // 出席カウント
     const myAttendance = attendanceInRange.filter(
-      (a) => a.studentId === st.id && classIdSet.has(a.classId)
+      (a) => a.studentId === st.id && classIdSet.has(a.classId),
     );
 
     const presentCount = myAttendance.filter((a) => a.status === "PRESENT").length;
-    const absentCount  = myAttendance.filter((a) => a.status === "ABSENT").length;
+    const absentCount = myAttendance.filter((a) => a.status === "ABSENT").length;
 
     // 請求回数
     let billableCount = 0;
@@ -99,7 +96,10 @@ export function buildStudentsRows(opts?: {
       billableCount = presentCount;
     } else {
       // session課金：所属クラスの HELD 回数合計
-      billableCount = classIds.reduce((sum, cid) => sum + (sessionsByClass.get(cid)?.length ?? 0), 0);
+      billableCount = classIds.reduce(
+        (sum, cid) => sum + (sessionsByClass.get(cid)?.length ?? 0),
+        0,
+      );
     }
 
     return {
@@ -117,7 +117,8 @@ export function buildStudentsRows(opts?: {
 
 // ==== 講師一覧を作る ====
 export function buildTutorsRows(opts?: { start?: Date; end?: Date }): TutorRow[] {
-  const { start, end } = opts?.start && opts?.end ? { start: opts.start, end: opts.end } : monthRange();
+  const { start, end } =
+    opts?.start && opts?.end ? { start: opts.start, end: opts.end } : monthRange();
 
   // 担当クラス
   const classesByTutor = new Map<string, Set<string>>();
@@ -134,7 +135,9 @@ export function buildTutorsRows(opts?: { start?: Date; end?: Date }): TutorRow[]
     const classCount = classesByTutor.get(tu.id)?.size ?? 0;
 
     // 授業担当のログ（sessionId がある・role=TUTOR）
-    const teachLogs = logsInRange.filter((w) => w.tutorId === tu.id && w.sessionId && w.role === "TUTOR");
+    const teachLogs = logsInRange.filter(
+      (w) => w.tutorId === tu.id && w.sessionId && w.role === "TUTOR",
+    );
     const sessionsWorked = teachLogs.length;
     const minutesWorked = teachLogs.reduce((sum, w) => sum + (w.minutes ?? 0), 0);
 

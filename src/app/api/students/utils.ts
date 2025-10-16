@@ -30,7 +30,9 @@ export function normalizeStudentPayload(payload: Record<string, unknown>) {
   const parsedGeneration = parseNumber(payload.generation);
   const parsedStatus = parseStatus(payload.status);
   const normalizedReport =
-    typeof payload.report === "string" && payload.report.trim() !== "" ? payload.report.trim() : null;
+    typeof payload.report === "string" && payload.report.trim() !== ""
+      ? payload.report.trim()
+      : null;
 
   if (!trimmedName) {
     return { error: "名前は必須です。" } as const;
@@ -68,7 +70,13 @@ export function serializeStudent(student: Student): StudentListRow {
     billableCount: 0,
     presentCount: 0,
     absentCount: 0,
-    createdAt: student.createdAt instanceof Date ? student.createdAt.toISOString() : String(student.createdAt),
-    updatedAt: student.updatedAt instanceof Date ? student.updatedAt.toISOString() : String(student.updatedAt),
+    createdAt:
+      student.createdAt instanceof Date
+        ? student.createdAt.toISOString()
+        : String(student.createdAt),
+    updatedAt:
+      student.updatedAt instanceof Date
+        ? student.updatedAt.toISOString()
+        : String(student.updatedAt),
   };
 }

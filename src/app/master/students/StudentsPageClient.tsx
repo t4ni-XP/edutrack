@@ -1,11 +1,5 @@
 "use client";
-import {
-  useState,
-  useEffect,
-  useCallback,
-  type ChangeEvent,
-  type FormEvent,
-} from "react";
+import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from "react";
 import {
   Alert,
   Box,
@@ -116,7 +110,10 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  const [globalMessage, setGlobalMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [globalMessage, setGlobalMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     setRows(initialRows);
@@ -138,14 +135,16 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
     }
   }, []);
 
-  const handleCreateChange = (field: keyof StudentFormState) => (event: ChangeEvent<HTMLInputElement>) => {
-    setCreateForm((prev) => ({ ...prev, [field]: event.target.value }));
-  };
+  const handleCreateChange =
+    (field: keyof StudentFormState) => (event: ChangeEvent<HTMLInputElement>) => {
+      setCreateForm((prev) => ({ ...prev, [field]: event.target.value }));
+    };
 
-  const handleEditChange = (field: keyof StudentFormState) => (event: ChangeEvent<HTMLInputElement>) => {
-    if (!editForm) return;
-    setEditForm({ ...editForm, [field]: event.target.value });
-  };
+  const handleEditChange =
+    (field: keyof StudentFormState) => (event: ChangeEvent<HTMLInputElement>) => {
+      if (!editForm) return;
+      setEditForm({ ...editForm, [field]: event.target.value });
+    };
 
   const handleCreateOpen = () => {
     setCreateForm(emptyCreateForm);
@@ -192,7 +191,8 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
 
       if (!res.ok) {
         const payload = await res.json().catch(() => null);
-        const message = payload?.message ?? "登録に失敗しました。時間をおいてから再度お試しください。";
+        const message =
+          payload?.message ?? "登録に失敗しました。時間をおいてから再度お試しください。";
         setCreateError(message);
         return;
       }
@@ -232,7 +232,8 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
 
       if (!res.ok) {
         const payload = await res.json().catch(() => null);
-        const message = payload?.message ?? "更新に失敗しました。時間をおいてから再度お試しください。";
+        const message =
+          payload?.message ?? "更新に失敗しました。時間をおいてから再度お試しください。";
         setEditError(message);
         return;
       }
@@ -269,7 +270,7 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
         </Alert>
       )}
       <Box p={4}>
-      <StudentsTable rows={rows} onRowClick={handleRowClick} />
+        <StudentsTable rows={rows} onRowClick={handleRowClick} />
       </Box>
       <Box display="flex" justifyContent="flex-front" px={4}>
         <PrimaryButton label="生徒を追加" onClick={handleCreateOpen} />
@@ -292,7 +293,12 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
         <DialogContent sx={{ pt: 1 }}>
           <Stack spacing={2} mt={1}>
             {createError && <Alert severity="error">{createError}</Alert>}
-            <TextField label="氏名" value={createForm.name} onChange={handleCreateChange("name")} required />
+            <TextField
+              label="氏名"
+              value={createForm.name}
+              onChange={handleCreateChange("name")}
+              required
+            />
             <TextField
               label="学年"
               type="number"
@@ -309,7 +315,12 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
               onChange={handleCreateChange("generation")}
               required
             />
-            <TextField select label="ステータス" value={createForm.status} onChange={handleCreateChange("status")}>
+            <TextField
+              select
+              label="ステータス"
+              value={createForm.status}
+              onChange={handleCreateChange("status")}
+            >
               {statusOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
@@ -326,7 +337,9 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleCreateClose} disabled={createSubmitting}>キャンセル</Button>
+          <Button onClick={handleCreateClose} disabled={createSubmitting}>
+            キャンセル
+          </Button>
           <Button type="submit" variant="contained" disabled={createSubmitting}>
             {createSubmitting ? "登録中..." : "登録"}
           </Button>
@@ -351,7 +364,12 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
           {selected && editForm && (
             <Stack spacing={2} mt={1}>
               {editError && <Alert severity="error">{editError}</Alert>}
-              <TextField label="氏名" value={editForm.name} onChange={handleEditChange("name")} required />
+              <TextField
+                label="氏名"
+                value={editForm.name}
+                onChange={handleEditChange("name")}
+                required
+              />
               <TextField
                 label="学年"
                 type="number"
@@ -368,7 +386,12 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
                 onChange={handleEditChange("generation")}
                 required
               />
-              <TextField select label="ステータス" value={editForm.status} onChange={handleEditChange("status")}>
+              <TextField
+                select
+                label="ステータス"
+                value={editForm.status}
+                onChange={handleEditChange("status")}
+              >
                 {statusOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -386,7 +409,9 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
               <Divider />
 
               <Typography variant="subtitle2">ID</Typography>
-              <Typography variant="body2" sx={{ wordBreak: "break-all" }}>{selected.id}</Typography>
+              <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                {selected.id}
+              </Typography>
 
               <TextField
                 label="在籍クラス数"
@@ -422,7 +447,9 @@ export default function StudentsPageClient({ initialRows }: StudentsPageClientPr
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleDetailClose} disabled={editSubmitting}>閉じる</Button>
+          <Button onClick={handleDetailClose} disabled={editSubmitting}>
+            閉じる
+          </Button>
           <Button type="submit" variant="contained" disabled={editSubmitting || !selected}>
             {editSubmitting ? "更新中..." : "保存"}
           </Button>

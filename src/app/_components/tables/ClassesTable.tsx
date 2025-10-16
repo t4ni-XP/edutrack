@@ -55,13 +55,13 @@ const columns: Column<ClassVM>[] = [
   {
     key: "time",
     header: "時間",
-    accessor: (r) => (r.startsAt && r.endsAt ? `${r.startsAt} - ${r.endsAt}` : r.startsAt ?? "-"),
+    accessor: (r) => (r.startsAt && r.endsAt ? `${r.startsAt} - ${r.endsAt}` : (r.startsAt ?? "-")),
     width: 140,
   },
   {
     key: "capacity",
     header: "定員",
-    accessor: (r) => (r.capacity ?? "未設定"),
+    accessor: (r) => r.capacity ?? "未設定",
     align: "right",
     width: 100,
   },

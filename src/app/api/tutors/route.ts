@@ -36,7 +36,10 @@ export async function POST(request: Request) {
     return NextResponse.json(serializeTutor(created), { status: 201 });
   } catch (error) {
     if (isUniqueConstraintError(error)) {
-      return NextResponse.json({ message: "同じメールアドレスの講師が既に存在します。" }, { status: 409 });
+      return NextResponse.json(
+        { message: "同じメールアドレスの講師が既に存在します。" },
+        { status: 409 },
+      );
     }
     console.error("[POST /api/tutors]", error);
     return NextResponse.json({ message: "登録に失敗しました。" }, { status: 500 });

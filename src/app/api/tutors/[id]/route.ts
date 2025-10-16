@@ -41,7 +41,10 @@ export async function PATCH(request: Request, { params }: Params) {
       return NextResponse.json({ message: "対象の講師が見つかりませんでした。" }, { status: 404 });
     }
     if (isUniqueConstraintError(error)) {
-      return NextResponse.json({ message: "同じメールアドレスの講師が既に存在します。" }, { status: 409 });
+      return NextResponse.json(
+        { message: "同じメールアドレスの講師が既に存在します。" },
+        { status: 409 },
+      );
     }
     console.error(`[PATCH /api/tutors/${id}]`, error);
     return NextResponse.json({ message: "更新に失敗しました。" }, { status: 500 });

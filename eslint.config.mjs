@@ -16,7 +16,7 @@ export default [
       "prisma/generated/**",
       "src/generated/prisma/**",
       "public/**",
-      "**/*.d.ts"
+      "**/*.d.ts",
     ],
   },
 
@@ -44,7 +44,7 @@ export default [
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "error",
-      "react/jsx-uses-react": "off",     // React 17+
+      "react/jsx-uses-react": "off", // React 17+
       "react/react-in-jsx-scope": "off", // React 17+
       ...reactHooks.configs.recommended.rules,
     },
