@@ -27,26 +27,36 @@ export default async function StudentsPage() {
   });
 
   const formattedStudents: StudentListRow[] = students.map((student) => {
-    const classCount = student.enrollments.length;
-    const presentCount = student.enrollments.reduce((count, enrollment) => {
-      return count + enrollment.Attendance.filter((att) => att.status === "PRESENT").length;
-    }, 0);
-    const absentCount = student.enrollments.reduce((count, enrollment) => {
-      return count + enrollment.Attendance.filter((att) => att.status === "ABSENT").length;
-    }, 0);
-    const billableCount = presentCount + absentCount;
+    // 集計用のオブジェクトを用意
+    const initialStats = {
+      presentCount: 0,
+      absentCount: 0,
+    };
+
+    // 一度のループで出席と欠席の両方をカウントする
+    const stats = student.enrollments.reduce((acc, enrollment) => {
+      for (const attendance of enrollment.Attendance) {
+        if (attendance.status === "PRESENT") {
+          acc.presentCount++;
+        } else if (attendance.status === "ABSENT") {
+          acc.absentCount++;
+        }
+      }
+      return acc;
+    }, initialStats);
+
+    const billableCount = stats.presentCount + stats.absentCount;
+
+    // enrollmentsを除いたstudentの情報を取得
+    const { enrollments, ...studentData } = student;
 
     return {
-      id: student.id,
-      name: student.name,
-      grade: student.grade,
-      generation: student.generation,
-      status: student.status,
-      report: student.report ?? null,
-      classCount,
+      ...studentData,
+      classCount: enrollments.length,
       billableCount,
-      presentCount,
-      absentCount,
+      presentCount: stats.presentCount,
+      absentCount: stats.absentCount,
+      report: student.report ?? null,
       createdAt: student.createdAt.toISOString(),
       updatedAt: student.updatedAt.toISOString(),
     };

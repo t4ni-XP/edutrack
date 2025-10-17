@@ -10,7 +10,7 @@ export type TutorListRow = {
   classCount: number;
   sessionsWorked: number;
   minutesWorked: number;
-  opMinutes: number;
+  opCount: number;
   createdAt: string;
   updatedAt: string;
 };

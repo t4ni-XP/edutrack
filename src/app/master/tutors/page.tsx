@@ -31,30 +31,38 @@ export default async function TutorsPage() {
   });
 
   const formattedTutors: TutorListRow[] = tutors.map((tutor) => {
-    const totalWorkedLogs = tutor.WorkLog.length;
-    const classCount = tutor.WorkLog.filter((log) => log.session).length;
-    const sessionsWorked = tutor.WorkLog.filter(
-      (log) => log.session && log.session.status === "HELD",
-    ).length;
-    const minutesWorked = tutor.WorkLog.reduce((total, log) => {
-      if (log.session && log.session.startAt && log.session.endAt) {
-        const start = log.session.startAt;
-        const end = log.session.endAt;
-        const diff = (end.getTime() - start.getTime()) / (1000 * 60); // 分単位の差分
-        total += diff;
-        return total;
-      } else {
-        return total;
+    // 集計用のオブジェクトを用意
+    const initialStats = {
+      classCount: 0,
+      sessionsWorked: 0,
+      minutesWorked: 0,
+    };
+
+    // 一度のループで全ての値を集計する
+    const stats = tutor.WorkLog.reduce((acc, log) => {
+      if (log.session) {
+        acc.classCount++;
+        if (log.session.status === "HELD") {
+          acc.sessionsWorked++;
+        }
+        if (log.session.startAt && log.session.endAt) {
+          const start = log.session.startAt;
+          const end = log.session.endAt;
+          const diff = (end.getTime() - start.getTime()) / (1000 * 60);
+          acc.minutesWorked += diff;
+        }
       }
-    }, 0);
-    const opMinutes = totalWorkedLogs - classCount;
+      return acc;
+    }, initialStats);
+
+    const { WorkLog, ...tutorData } = tutor;
+
+    const opCount = WorkLog.length - stats.classCount;
 
     return {
-      ...tutor,
-      classCount,
-      sessionsWorked,
-      minutesWorked,
-      opMinutes,
+      ...tutorData,
+      ...stats,
+      opCount, // opMinutesからリネーム
       createdAt: tutor.createdAt.toISOString(),
       updatedAt: tutor.updatedAt.toISOString(),
     };
