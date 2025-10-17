@@ -1,14 +1,14 @@
-import { Box, Stack, Typography } from "@mui/material";
-import Image from "next/image";
+"use client";
 
-interface HeaderProps {
-  signInStatus?: boolean;
-}
+import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
+import { signOut, useSession } from "next-auth/react";
+import { useAuthModal } from "@/components/auth/AuthModalContext";
 
-export default function Header({ signInStatus }: HeaderProps) {
-  // if (!signInStatus) {
-  //   signInStatus = false;
-  // }
+export default function Header() {
+  const { data: session, status } = useSession();
+  const { openAuthModal } = useAuthModal();
+  const authenticated = status === "authenticated" && !!session?.user;
+
   return (
     <Box sx={{ width: "auto", height: "100px", bgcolor: "#3A606E" }}>
       <Stack
@@ -18,34 +18,23 @@ export default function Header({ signInStatus }: HeaderProps) {
         spacing={2}
         sx={{ height: "100%" }}
       >
-        <Box pl={"20px"} pt={"20px"}>
+        <Box pl={3} pt={3}>
           <Typography variant="h2" component="div" gutterBottom>
             EduTrack
           </Typography>
         </Box>
-        <Box pr={"20px"}>
-          {signInStatus ? (
-            <Box
-              sx={{
-                width: 50,
-                height: 50,
-                borderRadius: "50%",
-                overflow: "hidden",
-                position: "relative",
-              }}
-            >
-              <Image
-                src="/userIcon.jpeg"
-                alt="User Icon"
-                fill
-                style={{
-                  objectFit: "cover", // 画像が親要素に収まるように、アスペクト比を維持して切り取る
-                  objectPosition: "left top", // 切り取りの起点を左上にする
-                }}
-              />
-            </Box>
+        <Box pr={3}>
+          {authenticated ? (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Avatar src={session.user?.image ?? undefined} alt={session.user?.name ?? "User"} />
+              <Button variant="outlined" color="inherit" onClick={() => signOut({ callbackUrl: "/" })}>
+                ログアウト
+              </Button>
+            </Stack>
           ) : (
-            <Image src="/googleSignInIcon_r.png" alt="Sign in with Google" width={50} height={50} />
+            <Button variant="contained" color="secondary" onClick={openAuthModal}>
+              ログイン
+            </Button>
           )}
         </Box>
       </Stack>

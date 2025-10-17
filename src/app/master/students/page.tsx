@@ -2,8 +2,13 @@
 import prisma from "@/lib/prisma";
 import StudentsPageClient from "./StudentsPageClient";
 import type { StudentListRow } from "./types";
+import { auth, isSessionAllowed, isSessionStaff } from "@/lib/auth";
+import { notFound } from "next/navigation";
 
 export default async function StudentsPage() {
+  const session = await auth();
+  if (!session || !isSessionAllowed(session) || !isSessionStaff(session)) notFound();
+
   const students = await prisma.student.findMany({
     select: {
       id: true,
