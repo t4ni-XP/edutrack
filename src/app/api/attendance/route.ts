@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { AttendanceStatus, SessionStatus } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
+import { auth, isSessionAllowed, isSessionStaff } from "@/lib/auth";
 
 const studentStatuses = new Set<AttendanceStatus | "NONE">([
   AttendanceStatus.PRESENT,
@@ -20,6 +21,11 @@ function endOfDay(date: Date) {
 }
 
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session || !isSessionAllowed(session) || !isSessionStaff(session)) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

@@ -46,7 +46,11 @@ import { buildClassVMs } from "@/mock/mock";
 // ];
 const mockRows = buildClassVMs();
 
-export default function Dashboard() {
+interface DashboardProps {
+  showAttendanceButton?: boolean;
+}
+
+export default function Dashboard({ showAttendanceButton = false }: DashboardProps) {
   return (
     <Box
       sx={{
@@ -82,7 +86,7 @@ export default function Dashboard() {
           <ClassesTable rows={mockRows} />
         </CardContent>
       </Card>
-      <PrimaryButton href="/attendance" label="出席管理" />
+      {showAttendanceButton && <PrimaryButton href="/attendance" label="出席管理" />}
     </Box>
   );
 }

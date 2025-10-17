@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import AttendancePageClient from "./AttendancePageClient";
 import type { AttendanceStudentRow, AttendanceTutorRow } from "./types";
 import { AttendanceStatus, EnrollmentStatus, StaffRole, Weekday } from "@/generated/prisma";
-import { auth } from "@/lib/auth";
+import { auth, isSessionAllowed, isSessionStaff } from "@/lib/auth";
 import { notFound } from "next/navigation";
 
 const weekdayOrder: Weekday[] = [
@@ -41,7 +41,7 @@ function endOfDay(date: Date) {
 
 export default async function AttendancePage() {
   const session = await auth();
-  if (!session) notFound();
+  if (!session || !isSessionAllowed(session) || !isSessionStaff(session)) notFound();
 
   const today = new Date();
   const weekday = getWeekdayEnum(today);

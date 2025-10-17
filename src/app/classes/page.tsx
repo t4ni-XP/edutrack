@@ -5,12 +5,12 @@ import { ClassType, Weekday } from "@/generated/prisma";
 import { serializeClass } from "@/lib/class-utils";
 import ClassesPageClient from "./ClassesPageClient";
 import type { ClassDetail } from "./types";
-import { auth } from "@/lib/auth";
+import { auth, isSessionAllowed } from "@/lib/auth";
 import { notFound } from "next/navigation";
 
 export default async function ClassesPage() {
   const session = await auth();
-  if (!session) notFound();
+  if (!session || !isSessionAllowed(session)) notFound();
 
   const [classes, students, tutors] = await Promise.all([
     prisma.class.findMany({
