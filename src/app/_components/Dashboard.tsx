@@ -2,48 +2,7 @@ import { Card, CardContent, Typography, Box } from "@mui/material";
 import ClassesTable from "./tables/ClassesTable";
 import PrimaryButton from "./ui/PrimaryButton";
 import { buildClassVMs } from "@/mock/mock";
-// const mockRows = [
-//   {
-//     id: "mon-101",
-//     weekday: "月",
-//     className: "英検対策",
-//     classroom: "A-101",
-//     tutors: ["田中", "佐藤"],
-//     students: [s("alice", 2), s("bob", 1), s("chris", 2), s("diana", 1)],
-//   },
-//   {
-//     id: "mon-203",
-//     weekday: "月",
-//     className: "TOEIC対策",
-//     classroom: "B-203",
-//     tutors: ["山本"],
-//     students: [s("erika", 5), s("fumi", 5), s("gen", 5)],
-//   },
-//   {
-//     id: "tue-110",
-//     weekday: "火",
-//     className: "個別指導",
-//     classroom: "C-110",
-//     tutors: ["小林"],
-//     students: [s("haru", 6), s("ito", 6)],
-//   },
-//   {
-//     id: "tue-305",
-//     weekday: "火",
-//     className: "個別指導",
-//     classroom: "D-305",
-//     tutors: ["高橋"],
-//     students: [s("jack", 3), s("ken", 3), s("lena", 3), s("mio", 3), s("noa", 3)],
-//   },
-//   {
-//     id: "wed-101",
-//     weekday: "水",
-//     className: "IB",
-//     classroom: "A-101",
-//     tutors: ["斎藤"],
-//     students: [s("olivia", 4), s("paul", 4)],
-//   },
-// ];
+
 const mockRows = buildClassVMs();
 
 interface DashboardProps {
@@ -86,7 +45,11 @@ export default function Dashboard({ showAttendanceButton = false }: DashboardPro
           <ClassesTable rows={mockRows} />
         </CardContent>
       </Card>
-      {showAttendanceButton && <PrimaryButton href="/attendance" label="出席管理" />}
+      {showAttendanceButton && (
+        <Box mt={4} sx={{ alignSelf: "flex-end" }}>
+          <PrimaryButton href="/attendance" label="出席管理" />
+        </Box>
+      )}
     </Box>
   );
 }

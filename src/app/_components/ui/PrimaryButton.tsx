@@ -15,7 +15,13 @@ type PrimaryButtonProps = Omit<ButtonProps, "variant" | "color" | "size" | "href
   textColor?: string;
   hoverBgColor?: string;
   external?: boolean;
-  // sx は ButtonProps 側に既に SxProps<Theme> で入ってるから追加不要
+  variant?: "text" | "outlined" | "contained";
+  // 追加：縁取り（ボーダー）
+  borderColor?: string;
+  borderWidth?: number | string; // 例: 2 or "2px"
+  borderStyle?: React.CSSProperties["borderStyle"]; // "solid" | "dashed" など
+  hoverBorderColor?: string;
+
   sx?: SxProps<Theme>;
 };
 
@@ -31,12 +37,19 @@ export default function PrimaryButton({
   external = false,
   startIcon,
   endIcon,
+  variant,
+  // 追加props
+  borderColor,
+  borderWidth,
+  borderStyle = "solid",
+  hoverBorderColor,
   sx,
   ...rest
 }: PrimaryButtonProps) {
   const hover = hoverBgColor ?? darken(bgColor, 0.08);
   const { type, ...restWithoutType } = rest;
-  const styles = {
+
+  const styles: SxProps<Theme> = {
     width,
     height,
     minWidth: width,
@@ -48,13 +61,23 @@ export default function PrimaryButton({
     fontWeight: 700,
     fontSize: 20,
     lineHeight: 1.2,
-    "&:hover": { bgcolor: hover },
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     px: 2,
+
+    // ▼ ここで枠線を制御（指定があるときだけ反映）
+    ...(borderColor ? { borderColor } : {}),
+    ...(borderWidth ? { borderWidth } : {}),
+    ...(borderStyle ? { borderStyle } : {}),
+
+    "&:hover": {
+      bgcolor: hover,
+      ...(hoverBorderColor ? { borderColor: hoverBorderColor } : {}),
+    },
+
     ...sx,
-  } satisfies SxProps<Theme>;
+  };
 
   if (href) {
     return (
@@ -63,7 +86,7 @@ export default function PrimaryButton({
         href={href}
         target={external ? "_blank" : undefined}
         rel={external ? "noopener noreferrer" : undefined}
-        variant="contained"
+        variant={variant ?? "contained"}
         disableElevation
         startIcon={startIcon}
         endIcon={endIcon}
@@ -74,9 +97,10 @@ export default function PrimaryButton({
       </Button>
     );
   }
+
   return (
     <Button
-      variant="contained"
+      variant={variant ?? "contained"}
       disableElevation
       startIcon={startIcon}
       endIcon={endIcon}

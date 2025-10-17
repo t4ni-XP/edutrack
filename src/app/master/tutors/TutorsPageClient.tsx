@@ -104,27 +104,29 @@ export default function TutorsPageClient({ initialRows }: TutorsPageClientProps)
   }, [modalState, handleCreateTutor, handleUpdateTutor]);
 
   return (
-    <Stack spacing={2}>
-      {globalMessage && (
-        <Alert severity={globalMessage.type} onClose={() => setGlobalMessage(null)}>
-          {globalMessage.text}
-        </Alert>
-      )}
-      <Box display="flex" justifyContent="flex-end">
-        <PrimaryButton label="講師を追加" onClick={() => setModalState({ type: "create" })} />
-      </Box>
-      <TutorsTable rows={rows} onRowClick={handleRowClick} />
+    <Box p={4}>
+      <Stack spacing={2}>
+        {globalMessage && (
+          <Alert severity={globalMessage.type} onClose={() => setGlobalMessage(null)}>
+            {globalMessage.text}
+          </Alert>
+        )}
+        <TutorsTable rows={rows} onRowClick={handleRowClick} />
 
-      {modalState && modalProps && (
-        <TutorModal
-          open
-          mode={modalProps.mode}
-          tutor={modalProps.tutor}
-          onClose={() => setModalState(null)}
-          onCreate={modalProps.mode === "create" ? modalProps.onCreate : undefined}
-          onUpdate={modalProps.mode === "detail" ? modalProps.onUpdate : undefined}
-        />
-      )}
-    </Stack>
+        <Box display="flex" justifyContent="flex-end">
+          <PrimaryButton label="講師を追加" onClick={() => setModalState({ type: "create" })} />
+        </Box>
+        {modalState && modalProps && (
+          <TutorModal
+            open
+            mode={modalProps.mode}
+            tutor={modalProps.tutor}
+            onClose={() => setModalState(null)}
+            onCreate={modalProps.mode === "create" ? modalProps.onCreate : undefined}
+            onUpdate={modalProps.mode === "detail" ? modalProps.onUpdate : undefined}
+          />
+        )}
+      </Stack>
+    </Box>
   );
 }

@@ -146,9 +146,6 @@ export default function ClassesPageClient({
           {globalMessage.text}
         </Alert>
       )}
-      <Box display="flex" justifyContent="flex-end">
-        <PrimaryButton label="クラスを追加" onClick={() => setModalState({ type: "create" })} />
-      </Box>
       <ClassTable
         rows={tableRows}
         weekday
@@ -159,6 +156,10 @@ export default function ClassesPageClient({
         studentsMode="detailed"
         onRowClick={handleRowClick}
       />
+
+      <Box display="flex" justifyContent="flex-end">
+        <PrimaryButton label="追加" onClick={() => setModalState({ type: "create" })} />
+      </Box>
 
       {modalState && modalProps && (
         <ClassModal
