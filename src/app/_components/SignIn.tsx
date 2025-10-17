@@ -11,6 +11,8 @@ export default function SignIn() {
       <Card
         variant="outlined" // 枠線を表示
         sx={{
+          my: 4,
+          mx: "auto",
           width: 600,
           height: 350,
           borderRadius: "30px", // 角丸を30pxに

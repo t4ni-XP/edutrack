@@ -3,6 +3,7 @@
 import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import { useAuthModal } from "@/components/auth/AuthModalContext";
+import PrimaryButton from "./PrimaryButton";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -26,15 +27,11 @@ export default function Header() {
         <Box pr={3}>
           {authenticated ? (
             <Stack direction="row" spacing={1} alignItems="center">
-              <Avatar src={session.user?.image ?? undefined} alt={session.user?.name ?? "User"} />
-              <Button variant="outlined" color="inherit" onClick={() => signOut({ callbackUrl: "/" })}>
-                ログアウト
-              </Button>
+              {/* <Avatar src={session.user?.image ?? undefined} alt={session.user?.name ?? "User"} /> */}
+              <PrimaryButton label="ログアウト" borderColor="#F8F8F8" borderWidth={1} variant="outlined" onClick={() => signOut({ callbackUrl: "/" })}/>
             </Stack>
           ) : (
-            <Button variant="contained" color="secondary" onClick={openAuthModal}>
-              ログイン
-            </Button>
+            <PrimaryButton label="ログイン" variant="outlined" borderColor="#F8F8F8" borderWidth={1} onClick={openAuthModal} />
           )}
         </Box>
       </Stack>
