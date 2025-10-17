@@ -19,20 +19,31 @@ const allowedEntries = (() => {
   return [] as string[];
 })();
 
-export function isAllowedEmail(email?: string | null) {
-  if (!email) return false;
-  const normalized = email.toLowerCase();
+function matchesWhitelist(email: string) {
   if (allowedEntries.length === 0) return true; // allow all if list empty
   return allowedEntries.some((entry) => {
     if (entry.startsWith("@")) {
-      return normalized.endsWith(entry);
+      return email.endsWith(entry);
     }
-    return normalized === entry;
+    return email === entry;
   });
 }
 
+export async function isEmailAllowed(email?: string | null): Promise<boolean> {
+  if (!email) return false;
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return false;
+  if (matchesWhitelist(normalized)) return true;
+
+  const existingTutor = await prisma.tutor.findFirst({
+    where: { email: { equals: normalized, mode: "insensitive" } },
+    select: { id: true },
+  });
+  return !!existingTutor;
+}
+
 export function isSessionAllowed(session: Session | null | undefined) {
-  return !!session?.user?.email && isAllowedEmail(session.user.email);
+  return !!session?.user?.allowed;
 }
 
 export function isSessionStaff(session: Session | null | undefined) {
@@ -52,7 +63,8 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user }) {
-      if (!isAllowedEmail(user?.email)) {
+      const allowed = await isEmailAllowed(user?.email);
+      if (!allowed) {
         console.warn("Unauthorized email attempted login", user?.email);
       }
       return true;
@@ -61,10 +73,10 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = user.id;
         session.user.email = session.user.email ?? user.email ?? null;
-        session.user.allowed = isAllowedEmail(session.user.email);
+        session.user.allowed = await isEmailAllowed(session.user.email);
         if (session.user.email) {
-          const tutor = await prisma.tutor.findUnique({
-            where: { email: session.user.email },
+          const tutor = await prisma.tutor.findFirst({
+            where: { email: { equals: session.user.email, mode: "insensitive" } },
             select: { role: true },
           });
           session.user.role = tutor?.role ?? null;
