@@ -32,7 +32,8 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
           <Box>
             <Typography variant="body2" color="text.secondary">
               ・ログイン済みの場合はそのままダッシュボードへ遷移します。
-              <br />・初めてのログインでも同じ手順で登録されます。
+              <br />
+              ・初めてのログインでも同じ手順で登録されます。
             </Typography>
           </Box>
         </Stack>

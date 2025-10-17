@@ -27,7 +27,11 @@ export default function Header() {
           {authenticated ? (
             <Stack direction="row" spacing={1} alignItems="center">
               <Avatar src={session.user?.image ?? undefined} alt={session.user?.name ?? "User"} />
-              <Button variant="outlined" color="inherit" onClick={() => signOut({ callbackUrl: "/" })}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
                 ログアウト
               </Button>
             </Stack>
