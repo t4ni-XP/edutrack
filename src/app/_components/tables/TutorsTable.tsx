@@ -56,9 +56,9 @@ const columns: Column<TutorListRow>[] = [
   },
   {
     key: "opMinutes",
-    header: "運営分数",
-    accessor: (r) => r.opMinutes,
-    sortAccessor: (r) => r.opMinutes,
+    header: "運営回数",
+    accessor: (r) => r.opCount,
+    sortAccessor: (r) => r.opCount,
     align: "right",
     width: 120,
   },
