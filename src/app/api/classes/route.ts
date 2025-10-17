@@ -8,7 +8,7 @@ import {
   normalizeClassPayload,
   serializeClass,
 } from "@/lib/class-utils";
-	export async function GET() {
+export async function GET() {
   try {
     const classes = await prisma.class.findMany({
       orderBy: { createdAt: "desc" },
@@ -76,7 +76,10 @@ export async function POST(request: Request) {
       );
     }
     if (isRecordNotFound(error)) {
-      return NextResponse.json({ message: "選択された生徒または講師が見つかりませんでした。" }, { status: 404 });
+      return NextResponse.json(
+        { message: "選択された生徒または講師が見つかりませんでした。" },
+        { status: 404 },
+      );
     }
     console.error("[POST /api/classes]", error);
     return NextResponse.json({ message: "クラスの作成に失敗しました。" }, { status: 500 });

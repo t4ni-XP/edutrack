@@ -68,7 +68,9 @@ export async function PATCH(request: Request, { params }: Params) {
         });
       }
 
-      const studentIdsToAdd = data.studentIds.filter((studentId) => !existingStudentIds.has(studentId));
+      const studentIdsToAdd = data.studentIds.filter(
+        (studentId) => !existingStudentIds.has(studentId),
+      );
       if (studentIdsToAdd.length > 0) {
         await tx.enrollment.createMany({
           data: studentIdsToAdd.map((studentId) => ({ classId: id, studentId })),
@@ -123,7 +125,10 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json(serializeClass(updated));
   } catch (error) {
     if (isRecordNotFound(error)) {
-      return NextResponse.json({ message: "対象のクラス、講師、または生徒が見つかりませんでした。" }, { status: 404 });
+      return NextResponse.json(
+        { message: "対象のクラス、講師、または生徒が見つかりませんでした。" },
+        { status: 404 },
+      );
     }
     if (isUniqueClassConstraintError(error)) {
       return NextResponse.json(

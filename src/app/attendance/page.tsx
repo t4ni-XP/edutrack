@@ -82,10 +82,7 @@ export default async function AttendancePage() {
 
   const sessionByClass = new Map(sessions.map((session) => [session.classId, session]));
 
-  const tutorIdSet = new Set([
-    ...tutorIdsForClasses,
-    ...staffTutors.map((tutor) => tutor.id),
-  ]);
+  const tutorIdSet = new Set([...tutorIdsForClasses, ...staffTutors.map((tutor) => tutor.id)]);
 
   const workLogs = await prisma.workLog.findMany({
     where: {
@@ -119,7 +116,9 @@ export default async function AttendancePage() {
       studentId: enrollment.student.id,
       studentName: enrollment.student.name,
       grade: enrollment.student.grade,
-      status: (attendanceByStudent.get(enrollment.student.id) ?? "NONE") as AttendanceStatus | "NONE",
+      status: (attendanceByStudent.get(enrollment.student.id) ?? "NONE") as
+        | AttendanceStatus
+        | "NONE",
     }));
   });
 

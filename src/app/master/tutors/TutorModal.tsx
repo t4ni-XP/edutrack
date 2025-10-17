@@ -19,7 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { StaffRole, Subject, type Subject as SubjectType } from "@/generated/prisma";
@@ -95,7 +95,14 @@ interface TutorModalProps {
   onUpdate?: (id: string, payload: TutorPayload) => Promise<TutorListRow | void>;
 }
 
-export default function TutorModal({ open, mode, tutor, onClose, onCreate, onUpdate }: TutorModalProps) {
+export default function TutorModal({
+  open,
+  mode,
+  tutor,
+  onClose,
+  onCreate,
+  onUpdate,
+}: TutorModalProps) {
   const isCreate = mode === "create";
   const [form, setForm] = useState<TutorFormState>(() => createFormState(tutor));
   const [editing, setEditing] = useState(isCreate);
@@ -134,7 +141,9 @@ export default function TutorModal({ open, mode, tutor, onClose, onCreate, onUpd
   const handleSubjectsChange = (event: SelectChangeEvent<SubjectType[]>) => {
     const value = event.target.value;
     const parsed = typeof value === "string" ? value.split(",") : value;
-    const list = parsed.filter((item): item is SubjectType => subjectOptions.includes(item as SubjectType));
+    const list = parsed.filter((item): item is SubjectType =>
+      subjectOptions.includes(item as SubjectType),
+    );
     setForm((prev) => ({ ...prev, subjects: Array.from(new Set(list)) }));
   };
 
@@ -147,8 +156,12 @@ export default function TutorModal({ open, mode, tutor, onClose, onCreate, onUpd
     const createdAt = new Date(tutor.createdAt);
     const updatedAt = new Date(tutor.updatedAt);
     return {
-      createdAt: Number.isNaN(createdAt.getTime()) ? tutor.createdAt : createdAt.toLocaleString("ja-JP"),
-      updatedAt: Number.isNaN(updatedAt.getTime()) ? tutor.updatedAt : updatedAt.toLocaleString("ja-JP"),
+      createdAt: Number.isNaN(createdAt.getTime())
+        ? tutor.createdAt
+        : createdAt.toLocaleString("ja-JP"),
+      updatedAt: Number.isNaN(updatedAt.getTime())
+        ? tutor.updatedAt
+        : updatedAt.toLocaleString("ja-JP"),
     };
   }, [tutor]);
 
@@ -271,7 +284,13 @@ export default function TutorModal({ open, mode, tutor, onClose, onCreate, onUpd
             <FormHelperText>複数選択可</FormHelperText>
           </FormControl>
           <FormControlLabel
-            control={<Checkbox checked={form.needsPickup} onChange={handleNeedsPickupChange} disabled={readOnly} />}
+            control={
+              <Checkbox
+                checked={form.needsPickup}
+                onChange={handleNeedsPickupChange}
+                disabled={readOnly}
+              />
+            }
             label="送迎が必要"
           />
 

@@ -11,11 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import type {
-  AttendanceStudentRow,
-  AttendanceStudentStatus,
-  AttendanceTutorRow,
-} from "./types";
+import type { AttendanceStudentRow, AttendanceStudentStatus, AttendanceTutorRow } from "./types";
 import type { AttendanceStatus } from "@/generated/prisma";
 
 const studentStatusOptions: Array<{ value: AttendanceStatus; label: string }> = [
@@ -110,9 +106,7 @@ export default function AttendancePageClient({ dateIso, students, tutors }: Prop
     setMessage(null);
     setTutorRows((prev) =>
       prev.map((item) =>
-        item.tutorId === row.tutorId && item.classId === row.classId
-          ? { ...item, status }
-          : item,
+        item.tutorId === row.tutorId && item.classId === row.classId ? { ...item, status } : item,
       ),
     );
 
@@ -193,8 +187,8 @@ export default function AttendancePageClient({ dateIso, students, tutors }: Prop
                               const next = event.target.checked
                                 ? option.value
                                 : option.value === "PRESENT"
-                                ? "ABSENT"
-                                : "PRESENT";
+                                  ? "ABSENT"
+                                  : "PRESENT";
                               if (next !== row.status) {
                                 handleTutorChange(row, next as "PRESENT" | "ABSENT");
                               }
@@ -229,23 +223,21 @@ export default function AttendancePageClient({ dateIso, students, tutors }: Prop
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center">
                     {studentStatusOptions.map((option) => (
-                     <FormControlLabel
-                       key={`${key}-${option.value}`}
-                       control={
-                         <Checkbox
-                           checked={row.status === option.value}
-                           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                              {
-                                const nextStatus: AttendanceStudentStatus = event.target.checked
-                                  ? option.value
-                                  : row.status === option.value
+                      <FormControlLabel
+                        key={`${key}-${option.value}`}
+                        control={
+                          <Checkbox
+                            checked={row.status === option.value}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                              const nextStatus: AttendanceStudentStatus = event.target.checked
+                                ? option.value
+                                : row.status === option.value
                                   ? "NONE"
                                   : row.status;
-                                if (nextStatus !== row.status) {
-                                  handleStudentChange(row, nextStatus);
-                                }
+                              if (nextStatus !== row.status) {
+                                handleStudentChange(row, nextStatus);
                               }
-                            }
+                            }}
                             disabled={isPending(key)}
                           />
                         }
