@@ -1,16 +1,15 @@
-import SignIn from "./_components/SignIn";
 import Dashboard from "./_components/Dashboard";
 import Header from "./_components/ui/Header";
+import SignIn from "./_components/SignIn";
+import { auth } from "@/lib/auth";
 
-interface HomeProps {
-  signInStatus?: boolean;
-}
+export default async function Home() {
+  const session = await auth();
 
-export default function Home({ signInStatus = true }: HomeProps) {
   return (
     <>
-      <Header signInStatus={signInStatus} />
-      {signInStatus ? <Dashboard /> : <SignIn />}
+      <Header />
+      {session ? <Dashboard /> : <SignIn />}
     </>
   );
 }

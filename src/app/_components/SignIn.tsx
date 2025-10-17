@@ -1,7 +1,11 @@
+"use client";
+
 import { Card, CardContent, Typography, Button, Box } from "@mui/material";
-import Image from "next/image";
+import { useAuthModal } from "@/components/auth/AuthModalContext";
 
 export default function SignIn() {
+  const { openAuthModal } = useAuthModal();
+
   return (
     <Box sx={{ mb: 4, mx: "auto" }}>
       <Card
@@ -27,13 +31,8 @@ export default function SignIn() {
             Googleアカウントを使用してEduTrackにログイン
           </Typography>
 
-          <Button>
-            <Image
-              src="/googleSignInIcon.png"
-              alt="Sign in with Google"
-              width={191} // 画像の幅
-              height={46} // 画像の高さ
-            />
+          <Button variant="contained" onClick={openAuthModal}>
+            Googleでログイン
           </Button>
         </CardContent>
       </Card>

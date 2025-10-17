@@ -1,5 +1,9 @@
 // app/people/page.tsx
-import { redirect } from "next/navigation";
-export default function Page() {
+import { redirect, notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
+
+export default async function Page() {
+  const session = await auth();
+  if (!session) notFound();
   redirect("/master/students");
 }
