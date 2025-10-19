@@ -1,5 +1,5 @@
 "use client";
-import { Box, Tabs, Tab } from "@mui/material";
+import { Tabs, Tab } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Header from "../_components/ui/Header";

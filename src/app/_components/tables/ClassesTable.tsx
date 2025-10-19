@@ -1,101 +1,68 @@
-// ClassesTable.tsx（ClassTable の統合版）
-"use client";
-import { Chip, Box } from "@mui/material";
-import DataTable, { Column } from "./DataTable";
-import type { ClassVM, Status, Weekday, ClassType } from "@/mock/mock";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
-const weekdayLabel: Record<Weekday, string> = {
-  MONDAY: "月",
-  TUESDAY: "火",
-  WEDNESDAY: "水",
-  THURSDAY: "木",
-  FRIDAY: "金",
-  SATURDAY: "土",
-  SUNDAY: "日",
-};
+export interface ClassesTableRow {
+  id: string | number;
+  name: string;
+  classType: string;
+  weekday: string;
+  classRoom: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  tutors: string[];
+  students: string[];
+}
 
-const classTypeLabel: Record<ClassType, string> = {
-  ENGLISH: "英語",
-  INDIVIDUAL: "個別",
-  INTERACTIVE: "双方向",
-  JAPANESE: "国語",
-};
+interface ClassesTableProps {
+  rows: ClassesTableRow[];
+}
 
-const statusLabel: Record<Status, { text: string; color: "default" | "success" | "warning" }> = {
-  ACTIVE: { text: "稼働", color: "success" },
-  INACTIVE: { text: "休止", color: "warning" },
-  GRADUATED: { text: "終了", color: "default" },
-};
-
-const columns: Column<ClassVM>[] = [
-  {
-    key: "weekday",
-    header: "曜日",
-    accessor: (r) => weekdayLabel[r.weekday],
-    sortAccessor: (r) => r.weekday,
-    width: 80,
-  },
-  { key: "name", header: "クラス名", accessor: (r) => r.name, sortAccessor: (r) => r.name },
-  {
-    key: "classType",
-    header: "種別",
-    accessor: (r) => classTypeLabel[r.classType],
-    width: 110,
-  },
-  { key: "classRoom", header: "教室", accessor: (r) => r.classRoom, width: 110 },
-  {
-    key: "status",
-    header: "ステータス",
-    accessor: (r) => {
-      const { text, color } = statusLabel[r.status];
-      return <Chip size="small" label={text} color={color} />;
-    },
-    width: 110,
-  },
-  {
-    key: "time",
-    header: "時間",
-    accessor: (r) => (r.startsAt && r.endsAt ? `${r.startsAt} - ${r.endsAt}` : (r.startsAt ?? "-")),
-    width: 140,
-  },
-  {
-    key: "capacity",
-    header: "定員",
-    accessor: (r) => r.capacity ?? "未設定",
-    align: "right",
-    width: 100,
-  },
-  {
-    key: "tutors",
-    header: "講師",
-    accessor: (r) => r.tutors.map((t) => t.name).join(", "),
-  },
-  {
-    key: "students",
-    header: "生徒",
-    accessor: (r) => (
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-        {r.students.map((s) => (
-          <Chip key={s.id} size="small" label={`${s.grade}年 ${s.name}`} />
-        ))}
-      </Box>
-    ),
-  },
-  {
-    key: "fee",
-    header: "単価",
-    accessor: (r) => `¥${r.studentUnitFee.toLocaleString()}`,
-    align: "right",
-    width: 120,
-  },
-];
-
-export default function ClassesTable({
-  rows,
-  onRowClick,
-}: {
-  rows: ClassVM[];
-  onRowClick?: (_row: ClassVM) => void;
-}) {
-  return <DataTable rows={rows} columns={columns} onRowClick={onRowClick} stickyHeader />;
+export default function ClassesTable({ rows }: ClassesTableProps) {
+  return (
+    <TableContainer component={Paper}>
+      <Table size="medium" stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell>クラス名</TableCell>
+            <TableCell>種別</TableCell>
+            <TableCell>曜日</TableCell>
+            <TableCell>教室</TableCell>
+            <TableCell>開始</TableCell>
+            <TableCell>終了</TableCell>
+            <TableCell>講師</TableCell>
+            <TableCell>生徒</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} align="center">
+                No DATA
+              </TableCell>
+            </TableRow>
+          ) : (
+            rows.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.classType}</TableCell>
+                <TableCell>{row.weekday}</TableCell>
+                <TableCell>{row.classRoom}</TableCell>
+                <TableCell>{row.startsAt ?? "-"}</TableCell>
+                <TableCell>{row.endsAt ?? "-"}</TableCell>
+                <TableCell>{row.tutors.join(", ") || "-"}</TableCell>
+                <TableCell>{row.students.join(", ") || "-"}</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }
