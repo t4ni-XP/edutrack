@@ -298,21 +298,21 @@ export default function TutorModal({
             <>
               <Divider />
               <Grid container spacing={2}>
-                <Grid xs={6}>
+                <Grid size={6}>
                   <Typography variant="subtitle2">担当クラス数</Typography>
                   <Typography variant="body2">{tutor.classCount}</Typography>
                 </Grid>
-                <Grid xs={6}>
+                <Grid size={6}>
                   <Typography variant="subtitle2">授業担当回数</Typography>
                   <Typography variant="body2">{tutor.sessionsWorked}</Typography>
                 </Grid>
-                <Grid xs={6}>
+                <Grid size={6}>
                   <Typography variant="subtitle2">授業分数</Typography>
                   <Typography variant="body2">{tutor.minutesWorked}</Typography>
                 </Grid>
-                <Grid xs={6}>
+                <Grid size={6}>
                   <Typography variant="subtitle2">運営分数</Typography>
-                  <Typography variant="body2">{tutor.opMinutes}</Typography>
+                  <Typography variant="body2">{tutor.opCount}</Typography>
                 </Grid>
               </Grid>
               {metadata && (

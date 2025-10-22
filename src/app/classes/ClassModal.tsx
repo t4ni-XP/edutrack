@@ -370,7 +370,7 @@ export default function ClassModal({
           <Stack spacing={2}>
             <Typography variant="h6">基本情報</Typography>
             <Grid container spacing={2}>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="クラス名"
                   value={form.name}
@@ -379,7 +379,7 @@ export default function ClassModal({
                   InputProps={{ readOnly }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <FormControl fullWidth required>
                   <InputLabel id="class-type-select-label">クラス種別</InputLabel>
                   <Select
@@ -397,7 +397,7 @@ export default function ClassModal({
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <FormControl fullWidth required>
                   <InputLabel id="weekday-select-label">曜日</InputLabel>
                   <Select
@@ -415,7 +415,7 @@ export default function ClassModal({
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="教室"
                   value={form.classRoom}
@@ -424,7 +424,7 @@ export default function ClassModal({
                   InputProps={{ readOnly }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="開始時間 (HH:mm)"
                   value={form.startsAt}
@@ -433,7 +433,7 @@ export default function ClassModal({
                   InputProps={{ readOnly }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="終了時間 (HH:mm)"
                   value={form.endsAt}
@@ -442,7 +442,7 @@ export default function ClassModal({
                   InputProps={{ readOnly }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="定員"
                   type="number"
@@ -452,7 +452,7 @@ export default function ClassModal({
                   InputProps={{ readOnly }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="生徒単価（1回あたり）"
                   type="number"
