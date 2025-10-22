@@ -3,15 +3,10 @@ import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { isUniqueConstraintError, normalizeTutorPayload, serializeTutor } from "../utils";
 
-interface Params {
-  params: { id: string };
-}
-
-export async function PATCH(request: Request, { params }: Params) {
-  const id = params?.id;
-
-  if (!id || typeof id !== "string") {
-    return NextResponse.json({ message: "講師IDが不正です。" }, { status: 400 });
+export async function PATCH(request: Request) {
+  const id = new URL(request.url).pathname.split("/").pop() || "";
+  if (!id) {
+    return NextResponse.json({ message: "クラスIDが不正です。" }, { status: 400 });
   }
 
   let payload: unknown;

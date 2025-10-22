@@ -7,13 +7,10 @@ import {
   normalizeClassPayload,
   serializeClass,
 } from "@/lib/class-utils";
+// import { NextRequest } from "next/server" でも可
 
-interface Params {
-  params: { id: string };
-}
-
-export async function PATCH(request: Request, { params }: Params) {
-  const id = params?.id;
+export async function PATCH(request: Request) {
+  const id = new URL(request.url).pathname.split("/").pop() || "";
   if (!id) {
     return NextResponse.json({ message: "クラスIDが不正です。" }, { status: 400 });
   }

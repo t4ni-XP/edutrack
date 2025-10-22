@@ -96,7 +96,7 @@ export function serializeTutor(tutor: Tutor): TutorListRow {
     classCount: 0,
     sessionsWorked: 0,
     minutesWorked: 0,
-    opMinutes: 0,
+    opCount: 0,
     createdAt:
       tutor.createdAt instanceof Date ? tutor.createdAt.toISOString() : String(tutor.createdAt),
     updatedAt:

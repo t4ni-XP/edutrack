@@ -76,7 +76,10 @@ export default function StudentsTable({
       ? c
       : {
           ...c,
-          renderEditCell: (row, commit) => (
+          renderEditCell: (
+            row: StudentListRow,
+            commit: (_next: Partial<StudentListRow>) => void,
+          ) => (
             <TextField
               size="small"
               defaultValue={row.name}

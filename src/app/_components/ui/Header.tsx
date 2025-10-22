@@ -20,12 +20,20 @@ export default function Header() {
         spacing={2}
         sx={{ height: "100%" }}
       >
-        <Box pl={3} pt={3}>
-          <Link href="/">
-            <Typography variant="h2" component="div" gutterBottom>
-              EduTrack
-            </Typography>
-          </Link>
+        <Box pl={2} pt={2}>
+          <Stack direction={"row"} alignItems="flex-end" gap={2}>
+            <Link href="/">
+              <Typography variant="h2" component="div">
+                EduTrack
+              </Typography>
+            </Link>
+            <Link href="/master">
+              <Typography mb={2}>生徒/チューター一覧</Typography>
+            </Link>
+            <Link href="/classes">
+              <Typography mb={2}>クラス一覧</Typography>
+            </Link>
+          </Stack>
         </Box>
         <Box pr={3}>
           {authenticated ? (
