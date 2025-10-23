@@ -2,12 +2,12 @@
 import prisma from "@/lib/prisma";
 import TutorsPageClient from "./TutorsPageClient";
 import type { TutorListRow } from "./types";
-// import { auth, isSessionAllowed, isSessionStaff } from "@/lib/auth";
-// import { notFound } from "next/navigation";
+import { auth, isSessionAllowed, isSessionStaff } from "@/lib/auth";
+import { notFound } from "next/navigation";
 
 export default async function TutorsPage() {
-  // const session = await auth();
-  // if (!session || !isSessionAllowed(session) || !isSessionStaff(session)) notFound();
+  const session = await auth();
+  if (!session || !isSessionAllowed(session) || !isSessionStaff(session)) notFound();
 
   const tutors = await prisma.tutor.findMany({
     select: {
