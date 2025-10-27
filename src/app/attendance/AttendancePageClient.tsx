@@ -220,6 +220,7 @@ export default function AttendancePageClient({ dateIso, students, tutors }: Prop
                 <Box key={key}>
                   <Typography variant="subtitle1">
                     {row.studentName}（{row.grade}年）／{row.className}
+                    {row.classRoom ? `（${row.classRoom}）` : ""}
                   </Typography>
                   <Stack direction="row" spacing={2} alignItems="center">
                     {studentStatusOptions.map((option) => (

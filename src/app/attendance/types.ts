@@ -5,6 +5,7 @@ export type AttendanceStudentStatus = AttendanceStatus | "NONE";
 export type AttendanceStudentRow = {
   classId: string;
   className: string;
+  classRoom: string | null;
   sessionId: string | null;
   studentId: string;
   studentName: string;
