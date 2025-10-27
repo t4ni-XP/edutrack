@@ -5,15 +5,22 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-const adapter =
-  process.env.DATABASE_URL !== undefined
-    ? new PrismaNeon({ connectionString: process.env.DATABASE_URL })
-    : undefined;
+const databaseUrl = process.env.DATABASE_URL;
+
+const shouldUseNeonAdapter = (() => {
+  if (!databaseUrl) return false;
+  const flag = process.env.USE_NEON_ADAPTER?.toLowerCase();
+  if (flag === "true") return true;
+  if (flag === "false") return false;
+  return /neon\.(tech|db\.net)/.test(databaseUrl);
+})();
+
+const adapter = shouldUseNeonAdapter ? new PrismaNeon({ connectionString: databaseUrl }) : undefined;
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter,
+    adapter: adapter ?? null,
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
