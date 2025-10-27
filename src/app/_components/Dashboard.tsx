@@ -71,8 +71,10 @@ export default async function Dashboard({ showAttendanceButton = false }: Dashbo
 
   return (
     <Box
+    component="section"
       sx={{
-        mb: 4,
+        py: 4,
+        my: 4,
         mx: "auto",
         width: "80%",
         display: "flex",
