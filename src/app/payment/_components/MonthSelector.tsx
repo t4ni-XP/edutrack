@@ -4,19 +4,30 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { shiftYearMonth } from "../utils/month";
 
-export default function MonthSelector({ value }: { value: string }) {
+interface MonthSelectorProps {
+  value: string;
+  basePath: string;
+  queryKey?: string;
+}
+
+export default function MonthSelector({
+  value,
+  basePath,
+  queryKey = "month",
+}: MonthSelectorProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   const updateMonth = (nextValue: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (nextValue) params.set("month", nextValue);
-    else params.delete("month");
+    if (nextValue) params.set(queryKey, nextValue);
+    else params.delete(queryKey);
     const query = params.toString();
     startTransition(() => {
-      router.replace(`/payment/fee${query ? `?${query}` : ""}`, { scroll: false });
+      router.replace(`${basePath}${query ? `?${query}` : ""}`, { scroll: false });
     });
   };
 
@@ -24,19 +35,15 @@ export default function MonthSelector({ value }: { value: string }) {
     updateMonth(event.target.value);
   };
 
-  const shiftMonth = (delta: number) => {
-    const { year, month } = parseYearMonth(value) ?? getTodayYearMonth();
-    const date = new Date(Date.UTC(year, month - 1 + delta, 1));
-    const nextYear = date.getUTCFullYear();
-    const nextMonth = date.getUTCMonth() + 1;
-    updateMonth(`${nextYear}-${String(nextMonth).padStart(2, "0")}`);
+  const handleShift = (delta: number) => {
+    updateMonth(shiftYearMonth(value, delta));
   };
 
   return (
     <Stack direction="row" alignItems="center" spacing={1}>
       <Tooltip title="前月">
         <span>
-          <IconButton size="small" onClick={() => shiftMonth(-1)} disabled={isPending}>
+          <IconButton size="small" onClick={() => handleShift(-1)} disabled={isPending}>
             <ArrowBackIosNewIcon fontSize="small" />
           </IconButton>
         </span>
@@ -52,25 +59,11 @@ export default function MonthSelector({ value }: { value: string }) {
       />
       <Tooltip title="翌月">
         <span>
-          <IconButton size="small" onClick={() => shiftMonth(1)} disabled={isPending}>
+          <IconButton size="small" onClick={() => handleShift(1)} disabled={isPending}>
             <ArrowForwardIosIcon fontSize="small" />
           </IconButton>
         </span>
       </Tooltip>
     </Stack>
   );
-}
-
-function parseYearMonth(input: string) {
-  const match = /^(\d{4})-(\d{2})$/.exec(input);
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  if (!Number.isFinite(year) || !Number.isFinite(month)) return null;
-  return { year, month };
-}
-
-function getTodayYearMonth() {
-  const now = new Date();
-  return { year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 };
 }

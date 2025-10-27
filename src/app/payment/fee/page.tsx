@@ -1,8 +1,9 @@
 import { Card, CardContent, Stack, Typography } from "@mui/material";
 import prisma from "@/lib/prisma";
 import StudentFeeTable from "./StudentFeeTable";
-import MonthSelector from "./MonthSelector";
+import MonthSelector from "../_components/MonthSelector";
 import type { StudentFeeRow } from "./types";
+import { getMonthRange } from "../utils/month";
 
 const currencyFormatter = new Intl.NumberFormat("ja-JP", {
   style: "currency",
@@ -35,7 +36,7 @@ export default async function PaymentFeePage({
           <Typography variant="h4">受講料</Typography>
           <Typography color="text.secondary">対象月の生徒別料金サマリー</Typography>
         </Stack>
-        <MonthSelector value={value} />
+        <MonthSelector value={value} basePath="/payment/fee" />
       </Stack>
       <Card variant="outlined">
         <CardContent>
@@ -122,27 +123,4 @@ async function fetchStudentFeeRows(startDate: Date, endDate: Date): Promise<Stud
       totalFee,
     };
   });
-}
-
-function getMonthRange(input?: string) {
-  const parsed = parseYearMonth(input);
-  const now = new Date();
-  const year = parsed?.year ?? now.getFullYear();
-  const month = parsed?.month ?? now.getMonth() + 1;
-  const startDate = new Date(Date.UTC(year, month - 1, 1));
-  const endDate = new Date(Date.UTC(year, month, 1));
-  const label = `${year}年${month}月`;
-  const value = `${year}-${String(month).padStart(2, "0")}`;
-  return { startDate, endDate, label, value };
-}
-
-function parseYearMonth(value?: string) {
-  if (!value) return null;
-  const match = /^(\d{4})-(\d{2})$/.exec(value);
-  if (!match) return null;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  if (!Number.isFinite(year) || !Number.isFinite(month)) return null;
-  if (month < 1 || month > 12) return null;
-  return { year, month };
 }
