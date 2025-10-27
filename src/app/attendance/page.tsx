@@ -117,6 +117,7 @@ export default async function AttendancePage() {
     return cls.enrollments.map((enrollment) => ({
       classId: cls.id,
       className: cls.name,
+      classRoom: cls.classRoom ?? null,
       sessionId: session?.id ?? null,
       studentId: enrollment.student.id,
       studentName: enrollment.student.name,
