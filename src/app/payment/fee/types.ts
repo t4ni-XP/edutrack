@@ -10,15 +10,7 @@ export interface StudentFeeRow {
 }
 
 export function toStudentFeeCsv(rows: StudentFeeRow[]): string {
-  const headers = [
-    "生徒名",
-    "学年",
-    "開講回数",
-    "出席回数",
-    "欠席回数",
-    "公欠回数",
-    "料金",
-  ];
+  const headers = ["生徒名", "学年", "開講回数", "出席回数", "欠席回数", "公欠回数", "料金"];
   const lines = [
     headers.join(","),
     ...rows.map((row) =>

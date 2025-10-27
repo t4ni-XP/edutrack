@@ -82,9 +82,7 @@ async function fetchTutorWageRows(startDate: Date, endDate: Date): Promise<Tutor
   });
 
   return tutors.map((tutor) => {
-    const teachingMap = new Map(
-      tutor.teachings.map((teaching) => [teaching.classId, teaching]),
-    );
+    const teachingMap = new Map(tutor.teachings.map((teaching) => [teaching.classId, teaching]));
 
     let openedCount = 0;
     const weekdayCounts = {

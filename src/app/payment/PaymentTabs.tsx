@@ -17,7 +17,13 @@ export default function PaymentTabs() {
   return (
     <Tabs value={active} aria-label="支払いタブ">
       {tabs.map((tab) => (
-        <Tab key={tab.value} label={tab.label} value={tab.value} component={Link} href={tab.value} />
+        <Tab
+          key={tab.value}
+          label={tab.label}
+          value={tab.value}
+          component={Link}
+          href={tab.value}
+        />
       ))}
     </Tabs>
   );

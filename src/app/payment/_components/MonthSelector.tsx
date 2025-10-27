@@ -12,11 +12,7 @@ interface MonthSelectorProps {
   queryKey?: string;
 }
 
-export default function MonthSelector({
-  value,
-  basePath,
-  queryKey = "month",
-}: MonthSelectorProps) {
+export default function MonthSelector({ value, basePath, queryKey = "month" }: MonthSelectorProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();

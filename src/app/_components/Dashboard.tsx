@@ -81,9 +81,7 @@ export default async function Dashboard({ showAttendanceButton = false }: Dashbo
         gap: 3,
       }}
     >
-      <Typography variant="h4">
-        今日のクラス（{weekdayLabel[weekday]}）
-      </Typography>
+      <Typography variant="h4">今日のクラス（{weekdayLabel[weekday]}）</Typography>
       <Card variant="outlined" sx={{ width: "100%", borderRadius: "30px" }}>
         <CardContent sx={{ p: 3 }}>
           <ClassesTable rows={rows} />

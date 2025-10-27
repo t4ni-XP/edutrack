@@ -15,7 +15,9 @@ const shouldUseNeonAdapter = (() => {
   return /neon\.(tech|db\.net)/.test(databaseUrl);
 })();
 
-const adapter = shouldUseNeonAdapter ? new PrismaNeon({ connectionString: databaseUrl }) : undefined;
+const adapter = shouldUseNeonAdapter
+  ? new PrismaNeon({ connectionString: databaseUrl })
+  : undefined;
 
 export const prisma =
   globalForPrisma.prisma ??

@@ -1,5 +1,5 @@
 import Header from "../_components/ui/Header";
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import prisma from "@/lib/prisma";
 import { ClassType, Weekday } from "@/generated/prisma";
 import { serializeClass } from "@/lib/class-utils";
@@ -51,14 +51,16 @@ export default async function ClassesPage() {
   return (
     <>
       <Header />
-      <Box sx={{ width: "80%", mx: "auto", my: 4 }}>
-        <ClassesPageClient
-          initialClasses={classDetails}
-          students={studentOptions}
-          tutors={tutorOptions}
-          classTypes={Object.values(ClassType)}
-          weekdays={Object.values(Weekday)}
-        />
+      <Box component="section" sx={{ py: 4 }}>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <ClassesPageClient
+            initialClasses={classDetails}
+            students={studentOptions}
+            tutors={tutorOptions}
+            classTypes={Object.values(ClassType)}
+            weekdays={Object.values(Weekday)}
+          />
+        </Container>
       </Box>
     </>
   );
