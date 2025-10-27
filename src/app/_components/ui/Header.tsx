@@ -33,6 +33,9 @@ export default function Header() {
             <Link href="/classes">
               <Typography mb={2}>クラス一覧</Typography>
             </Link>
+            <Link href="/payment">
+              <Typography mb={2}>料金表</Typography>
+            </Link>
           </Stack>
         </Box>
         <Box pr={3}>
