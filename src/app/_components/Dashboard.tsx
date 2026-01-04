@@ -91,7 +91,7 @@ export default async function Dashboard({ showAttendanceButton = false }: Dashbo
       </Card>
       {showAttendanceButton && (
         <Box alignSelf="flex-end">
-          <PrimaryButton href="/attendance" label="出席管理" />
+          <PrimaryButton href="/attendance" label="出席入力" />
         </Box>
       )}
     </Box>
