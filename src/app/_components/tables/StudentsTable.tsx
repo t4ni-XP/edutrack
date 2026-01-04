@@ -31,7 +31,7 @@ const columns: Column<StudentListRow>[] = [
     accessor: (r) => r.classCount,
     sortAccessor: (r) => r.classCount,
     align: "right",
-    width: 120,
+    width: 160,
   },
   {
     key: "billableCount",

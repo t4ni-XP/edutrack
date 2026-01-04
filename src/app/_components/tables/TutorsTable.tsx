@@ -18,6 +18,7 @@ const columns: Column<TutorListRow>[] = [
     key: "role",
     header: "役割",
     accessor: (r) => roleLabels[r.role] ?? r.role,
+    width: 120,
   },
   {
     key: "needsPickup",
@@ -36,7 +37,7 @@ const columns: Column<TutorListRow>[] = [
     accessor: (r) => r.classCount,
     sortAccessor: (r) => r.classCount,
     align: "right",
-    width: 120,
+    width: 160,
   },
   {
     key: "sessionsWorked",

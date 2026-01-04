@@ -23,18 +23,18 @@ export default function Header() {
         <Box pl={2} pt={2}>
           <Stack direction={"row"} alignItems="flex-end" gap={2}>
             <Link href="/">
-              <Typography variant="h2" component="div">
+              <Typography variant="h2" component="div" color="#FFF">
                 EduTrack
               </Typography>
             </Link>
             <Link href="/master">
-              <Typography mb={2}>生徒/チューター一覧</Typography>
+              <Typography mb={2} color="#F8F8F8">生徒/チューター一覧</Typography>
             </Link>
             <Link href="/classes">
-              <Typography mb={2}>クラス一覧</Typography>
+              <Typography mb={2} color="#F8F8F8">クラス一覧</Typography>
             </Link>
             <Link href="/payment">
-              <Typography mb={2}>料金表</Typography>
+              <Typography mb={2} color="#F8F8F8">料金表</Typography>
             </Link>
           </Stack>
         </Box>
